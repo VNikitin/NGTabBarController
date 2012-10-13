@@ -35,6 +35,7 @@ static char tabBarImageViewKey;
 @property (nonatomic, assign) NSUInteger oldSelectedIndex;
 @property (nonatomic, readonly) BOOL containmentAPISupported;
 @property (nonatomic, readonly) UIViewAnimationOptions currentActiveAnimationOptions;
+@property (nonatomic, strong, readwrite) VNToolbar *toolbar;
 
 - (void)updateUI;
 - (void)layout;
@@ -48,6 +49,9 @@ static char tabBarImageViewKey;
 
 - (CGFloat)widthOrHeightOfTabBarForPosition:(NGTabBarPosition)position;
 
+- (void)setupToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition) tabbarPosition;
+- (CGFloat)widthOrHeightOfToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition)tabbarPosition;
+- (UIEdgeInsets) modifyInsetsForToolbarPosition:(UIEdgeInsets) originalInsets;
 @end
 
 
@@ -63,6 +67,9 @@ static char tabBarImageViewKey;
 @synthesize animationDuration = _animationDuration;
 @synthesize tabBarItems = _tabBarItems;
 @synthesize oldSelectedIndex = _oldSelectedIndex;
+@synthesize toolbar = _toolbar;
+@synthesize toolbarHidden = _toolbarHidden;
+@synthesize toolbarPosition = _toolbarPosition;
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - Lifecycle
@@ -79,6 +86,8 @@ static char tabBarImageViewKey;
         
         // need to call setter here
         self.delegate = delegate;
+        _toolbarHidden = FALSE;
+        _toolbarPosition = VNToolbarPositionDynamicOpposite;
     }
     
     return self;
@@ -101,12 +110,14 @@ static char tabBarImageViewKey;
     self.tabBar.position = self.tabBarPosition;
     
     [self setupTabBarForPosition:self.tabBarPosition];
+    [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
     [self.view addSubview:self.tabBar];
+    [self.view addSubview:self.toolbar];
 }
 
 - (void)viewDidUnload {
     self.tabBar = nil;
-    
+    self.toolbar = nil;
     if (self.containmentAPISupported) {
         [self.selectedViewController removeFromParentViewController];
     } else {
@@ -189,6 +200,8 @@ static char tabBarImageViewKey;
         [self.selectedViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     }
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - NGTabBarController
@@ -354,6 +367,190 @@ static char tabBarImageViewKey;
 
 - (NSTimeInterval)animationDuration {
     return self.animation != NGTabBarControllerAnimationNone ? _animationDuration : 0.f;
+}
+
+////////////////////////////////////////////////////////////////////////
+#pragma mark - UIToolbar
+////////////////////////////////////////////////////////////////////////
+- (void) setToolbarHidden:(BOOL)hidden animated:(BOOL)animated {
+    if (_toolbarHidden != hidden) {
+        _toolbarHidden = hidden;
+        if (!_toolbarHidden) {
+            self.toolbar.hidden = hidden;
+        }
+        
+        if (animated) {
+            //You cann't manage toolbar frame directly. Only center and bounds becouse VNToolbar uses a transfrom property to realize vertical position
+            CGPoint shift = CGPointZero;
+            switch (VNToolbarRealPosition(self.toolbarPosition, self.tabBarPosition)) {
+                case VNToolbarPositionTop:
+                    shift.y -= self.toolbar.frame.size.height;
+                    break;
+                case VNToolbarPositionBottom:
+                    shift.y += self.toolbar.frame.size.height;
+                    break;
+                case VNToolbarPositionLeft:
+                    shift.x -= self.toolbar.frame.size.width;
+                    break;
+                case VNToolbarPositionRight:
+                    shift.x += self.toolbar.frame.size.width;
+                    break;
+                default:
+                    break;
+            }
+            if (!_toolbarHidden) {
+                self.toolbar.center = CGPointMake(self.toolbar.center.x + shift.x, self.toolbar.center.y + shift.y);
+            }
+            _animationActive = YES;
+            [UIView animateWithDuration:kNGDefaultAnimationDuration
+                             animations:^{
+                                 CGRect frame = self.childViewControllerFrame;
+                                 self.selectedViewController.view.frame = frame;
+                                 if (_toolbarHidden) {
+                                     self.toolbar.center = CGPointMake(self.toolbar.center.x + shift.x, self.toolbar.center.y + shift.y);
+                                 } else {
+                                     self.toolbar.center = CGPointMake(self.toolbar.center.x - shift.x, self.toolbar.center.y - shift.y);
+                                 }
+                             } completion:^(BOOL finished) {
+                                 _animationActive = NO;
+                                 if (_toolbarHidden) {
+                                    self.toolbar.hidden = hidden;
+                                 }
+                                 [self layout];
+                             }];
+        } else {
+            self.selectedViewController.view.frame = self.childViewControllerFrame;
+            self.toolbar.hidden = hidden;
+            [self layout];
+        }
+    }
+    
+
+}
+- (BOOL) isToolbarHidden {
+    return _toolbarHidden || self.toolbar.hidden;
+}
+- (void) setToolbarHidden:(BOOL)toolbarHidden {
+    [self setToolbarHidden:toolbarHidden animated:FALSE];
+}
+- (void) setToolbarPosition:(VNToolbarPosition)toolbarPosition {
+    if (_toolbarPosition != toolbarPosition) {
+        _toolbarPosition = toolbarPosition;
+        switch (VNToolbarRealPosition(toolbarPosition, self.tabBarPosition)) {
+            case VNToolbarPositionTop:
+            case VNToolbarPositionBottom:
+                self.toolbar.isHorizontalMode = TRUE;
+                self.toolbar.isLeftSideMode = TRUE;
+                break;
+            case VNToolbarPositionLeft:
+            case VNToolbarPositionRight:
+                self.toolbar.isHorizontalMode = FALSE;
+                self.toolbar.isLeftSideMode = FALSE;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (VNToolbar *) toolbar {
+    if (!_toolbar) {
+        _toolbar = [[VNToolbar alloc] initWithFrame:CGRectZero];
+        [self.view bringSubviewToFront:self.tabBar];
+    }
+    return _toolbar;
+}
+
+#pragma mark - Toolbar layout
+- (void)setupToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition) tabbarPosition {
+    CGRect frame = CGRectZero;
+    UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
+    CGFloat dimension = [self widthOrHeightOfToolbarForPosition:position withTabbarPosition:tabbarPosition];
+    
+    switch (VNToolbarRealPosition(position, tabbarPosition)) {
+        case VNToolbarPositionTop: {
+            frame = CGRectMake(0.f, 0.f, self.view.bounds.size.width, dimension);
+            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
+            self.toolbar.isHorizontalMode = TRUE;
+            self.toolbar.isLeftSideMode = TRUE;
+            break;
+        }
+            
+        case VNToolbarPositionRight: {
+            frame = CGRectMake(self.view.bounds.size.width - dimension, 0.f, dimension, self.view.bounds.size.height);
+            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
+            self.toolbar.isHorizontalMode = FALSE;
+            self.toolbar.isLeftSideMode = FALSE;
+            break;
+        }
+            
+        case VNToolbarPositionBottom: {
+            frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width, dimension);
+            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+            self.toolbar.isHorizontalMode = TRUE;
+            self.toolbar.isLeftSideMode = TRUE;
+            break;
+        }
+            
+        case VNToolbarPositionLeft:
+        default: {
+            frame = CGRectMake(0.f, 0.f, dimension, self.view.bounds.size.height);
+            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
+            self.toolbar.isHorizontalMode = FALSE;
+            self.toolbar.isLeftSideMode = FALSE;            
+            break;
+        }
+    }
+    self.toolbar.frame = frame;
+    [self.toolbar sizeToFit]; //configure toolbar
+}
+
+- (CGFloat)widthOrHeightOfToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition)tabbarPosition {
+    CGFloat dimension = kVNToolbarButtonSize + 2 * kVNToolbarButtonGap;
+
+    // if toolbar size is not fixed than we use the tabbar dimensions, and default dimension otherwise
+    if (!self.toolbar.sizeIsFixed) {
+        
+        if (VNToolbarIsVertical(position, tabbarPosition)) {
+            dimension = [self widthOrHeightOfTabBarForPosition:NGTabBarPositionLeft];
+        } else {
+            dimension = [self widthOrHeightOfTabBarForPosition:NGTabBarPositionBottom];
+        }
+    }
+    return dimension;
+}
+
+- (UIEdgeInsets) modifyInsetsForToolbarPosition:(UIEdgeInsets) originalInsets {
+    CGFloat toolbarInset = [self widthOrHeightOfToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
+    if (self.toolbarHidden) {
+        toolbarInset = 0.f;
+    }
+    switch (VNToolbarRealPosition(self.toolbarPosition, self.tabBarPosition)) {
+        //control tabbar over toolbar - we don't need to do any adjusting
+        case VNToolbarPositionTop:
+            if (self.tabBarPosition != NGTabBarPositionTop) {
+                originalInsets.top += toolbarInset;
+            }
+            break;
+        case VNToolbarPositionBottom:
+            if (self.tabBarPosition != NGTabBarPositionBottom) {
+                originalInsets.bottom += toolbarInset;
+            }
+            break;
+        case VNToolbarPositionRight:
+            if (self.tabBarPosition != NGTabBarPositionRight) {
+                originalInsets.right += toolbarInset;
+            }
+            break;
+        case VNToolbarPositionLeft:
+            if (self.tabBarPosition != NGTabBarPositionLeft) {
+                originalInsets.left += toolbarInset;
+            }
+            break;
+        default:
+            break;
+    }
+    return originalInsets;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -535,8 +732,8 @@ static char tabBarImageViewKey;
     for (UIViewController *viewController in self.viewControllers) {
         viewController.view.frame = childViewControllerFrame;
     }
-    
     [self setupTabBarForPosition:self.tabBarPosition];
+    [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
 }
 
 - (CGRect)childViewControllerFrame {
@@ -567,7 +764,8 @@ static char tabBarImageViewKey;
             break;
     }
     
-    
+    edgeInsets = [self modifyInsetsForToolbarPosition:edgeInsets];
+
     return UIEdgeInsetsInsetRect(bounds, edgeInsets);
 }
 

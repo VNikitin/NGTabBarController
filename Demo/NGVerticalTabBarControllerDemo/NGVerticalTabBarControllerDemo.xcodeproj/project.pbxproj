@@ -24,6 +24,7 @@
 		9BEA2B6314ED1B4A00AEE977 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B6214ED1B4A00AEE977 /* main.m */; };
 		9BEA2B6714ED1B4A00AEE977 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B6614ED1B4A00AEE977 /* AppDelegate.m */; };
 		9BEA2B8214ED1BC300AEE977 /* NGColoredViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */; };
+		DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6A2BF91629C04D00D60130 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		9BEA2B6614ED1B4A00AEE977 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9BEA2B8014ED1BC300AEE977 /* NGColoredViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGColoredViewController.h; sourceTree = "<group>"; };
 		9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGColoredViewController.m; sourceTree = "<group>"; };
+		DE6A2BF91629C04D00D60130 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */,
 				9BA31574153C76CE002E7628 /* libNGTabBarController.a in Frameworks */,
 				9BEA2B5714ED1B4A00AEE977 /* UIKit.framework in Frameworks */,
 				9BEA2B5914ED1B4A00AEE977 /* Foundation.framework in Frameworks */,
@@ -129,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				9BA31567153C769C002E7628 /* NGTabBarController.xcodeproj */,
+				DE6A2BF91629C04D00D60130 /* QuartzCore.framework */,
 				9BEA2B5614ED1B4A00AEE977 /* UIKit.framework */,
 				9BEA2B5814ED1B4A00AEE977 /* Foundation.framework */,
 				9BEA2B5A14ED1B4A00AEE977 /* CoreGraphics.framework */,

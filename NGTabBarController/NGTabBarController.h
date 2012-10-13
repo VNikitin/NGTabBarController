@@ -12,7 +12,8 @@
 #import "NGTabBarPosition.h"
 #import "NGTabBarItem.h"
 #import "UIViewController+NGTabBarItem.h"
-
+#import "VNToolbarPosition.h"
+#import "VNToolbar.h"
 
 #define kNGTabBarControllerKey      @"kNGTabBarControllerKey"
 
@@ -42,10 +43,21 @@
 
 @property (nonatomic, assign) BOOL tabBarHidden;
 
-
 /** The designated initializer. */
 - (id)initWithDelegate:(id<NGTabBarControllerDelegate>)delegate;
 
 - (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
 
+
+/*
+ *  modified by SubMarine on 10/13/12.
+ *  Copyright (c) 2012 Valeriy Nikitin. All rights reserved.
+ *  
+ *  Configuring Custom Toolbars like UINavigationController toolbar
+ *  Setup UIToolbar position
+ */
+@property (nonatomic, strong, readonly) VNToolbar *toolbar;
+- (void) setToolbarHidden:(BOOL)hidden animated:(BOOL)animated;
+@property (nonatomic, getter=isToolbarHidden) BOOL toolbarHidden;
+@property (nonatomic, assign) VNToolbarPosition toolbarPosition;
 @end

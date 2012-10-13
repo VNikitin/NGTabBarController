@@ -38,6 +38,10 @@
     
     tabBarController.viewControllers = viewController;
     
+    UIBarButtonItem *testToolbarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"liveradio"] style:UIBarButtonItemStylePlain target:nil action:NULL];
+    [tabBarController.toolbar setItems:[NSArray arrayWithObject:testToolbarItem]];
+    tabBarController.toolbarPosition = VNToolbarPositionDynamicOpposite;
+    
     self.window.rootViewController = tabBarController;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
@@ -54,7 +58,7 @@ sizeOfItemForViewController:(UIViewController *)viewController
                    atIndex:(NSUInteger)index 
                   position:(NGTabBarPosition)position {
     if (NGTabBarIsVertical(position)) {
-        return CGSizeMake(150.f, 60.f);
+        return CGSizeMake(100.f, 60.f);
     } else {
         return CGSizeMake(60.f, 49.f);
     }
