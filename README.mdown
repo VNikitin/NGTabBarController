@@ -1,7 +1,7 @@
-# Custom UIToolbar that could be used with TabBarController.
+# Custom UIToolbar that could be used with TabBarController
 
 # Brief
-In general VNToolber is a standart UIToolbar that support different orientations.
+In general VNToolber is a standart UIToolbar that supports different orientations.
 Custom UIToolbar (VNToolbar) supports:
 - horizontal and vertical orientations
 - any UIBarButtonItems (UIBarButtonSystemItems not supported) and thier proper orientation
