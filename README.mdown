@@ -1,9 +1,12 @@
-This fork is support custom UIToolbar that could be used with TabBarController.
+# Custom UIToolbar that could be used with TabBarController.
+
 # Brief
+In general VNToolber is a standart UIToolbar that support different orientations.
 Custom UIToolbar (VNToolbar) supports:
-- horizontal and vertical orientation
-- any UIBarButtonItems (exclide UIBarButtonSystemItems) and thier proper orientation
+- horizontal and vertical orientations
+- any UIBarButtonItems (UIBarButtonSystemItems not supported) and thier proper orientation
 - custom styles - rounded corner and arrows for edge
+
 
 # Details
 ##  Layout
@@ -28,8 +31,11 @@ Content layout strategy
     left/right
 
 ## Images
+Dynamic Toolbar Position Opposite - Portrate
 ![Dynamic Toolbar Position Opposite - Portrate](https://www.evernote.com/shard/s244/sh/ebde8344-f9b7-41b8-a368-bf27cbc14725/b9504ef58df79112784d188fc62807f9/res/3db51093-4083-466a-b127-fa233bd047f5/skitch.png "VNToolbarPositionDynamicOpposite")
+Dynamic Toolbar Position Opposite - Landskape
 ![Dynamic Toolbar Position Opposite - Landskape](https://www.evernote.com/shard/s244/sh/af162d4d-1111-47ae-914a-2e4654e51063/272adff30ac57491c6b3ae10d122dd07/res/b6e74144-ed99-4b71-88ed-c34778fe6e97/skitch.png "VNToolbarPositionDynamicOpposite")
+Dynamic Toolbar Position - Right
 ![Dynamic Toolbar Position - Right](https://www.evernote.com/shard/s244/sh/12499db3-6a82-446e-9a33-a0e548202228/6ad265c8279c919a4c38cdb4d8397086/res/62c04c86-0434-4b1a-9ec9-282028cf14b1/skitch.png "VNToolbarPositionDynamicRight")
 
 --------------------------
