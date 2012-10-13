@@ -4,7 +4,7 @@
 In general VNToolber is a standart UIToolbar that supports different orientations.
 Custom UIToolbar (VNToolbar) supports:
 - horizontal and vertical orientations
-- any UIBarButtonItems (UIBarButtonSystemItems not supported) and thier proper orientation
+- any UIBarButtonItems (except UIBarButtonSystemItems and titles)
 - custom styles - rounded corner and arrows for edge
 
 # Details
