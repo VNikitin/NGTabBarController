@@ -11,14 +11,18 @@ Custom UIToolbar (VNToolbar) supports:
 # Details
 ##  Layout
 Fixed toolbar position (independent to TabBar position)
+```
     VNToolbarPositionTop
     VNToolbarPositionBottom
     VNToolbarPositionRight
     VNToolbarPositionLeft
+```
 Dynamic position (in relation to TabBar)
+```
     VNToolbarPositionDynamicOpposite
     VNToolbarPositionDynamicLeft
     VNToolbarPositionDynamicRight
+```
 Edge styles
     VNToolbarEdgeStyleRoundedLeft
     VNToolbarEdgeStyleRoundedRight
