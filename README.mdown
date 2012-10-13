@@ -1,4 +1,4 @@
-# Custom UIToolbar that could be used with TabBarController
+# Custom VNToolbar that could be used with NGTabBarController
 
 # Brief
 In general VNToolber is a standart UIToolbar that supports different orientations.
@@ -6,7 +6,6 @@ Custom UIToolbar (VNToolbar) supports:
 - horizontal and vertical orientations
 - any UIBarButtonItems (UIBarButtonSystemItems not supported) and thier proper orientation
 - custom styles - rounded corner and arrows for edge
-
 
 # Details
 ##  Layout
@@ -37,6 +36,23 @@ Content layout strategy
 ```
     left/right
 ```
+##  Usage    
+add following code where you initialize NGTabBarController *tabBarController 
+``` objective-c
+    // your button(s)
+    UIBarButtonItem *testToolbarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"liveradio"] style:UIBarButtonItemStylePlain target:nil action:NULL]; 
+    [tabBarController.toolbar setItems:[NSArray arrayWithObject:testToolbarItem]];
+    //toolbar position style
+    tabBarController.toolbarPosition = VNToolbarPositionDynamicRight;
+```
+and any others:
+```
+  barStyle
+  translucent
+  tintColor
+  ...
+```
+
 ## Images
 Dynamic Toolbar Position Opposite - Portrate     
 ![Dynamic Toolbar Position Opposite - Portrate](https://www.evernote.com/shard/s244/sh/ebde8344-f9b7-41b8-a368-bf27cbc14725/b9504ef58df79112784d188fc62807f9/res/3db51093-4083-466a-b127-fa233bd047f5/skitch.png "VNToolbarPositionDynamicOpposite")     
