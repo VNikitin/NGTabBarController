@@ -21,6 +21,10 @@
 		9B81DD04153C758C007FEE73 /* NGTabBarControllerAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFB153C758C007FEE73 /* NGTabBarControllerAnimation.h */; };
 		9B81DD05153C758C007FEE73 /* NGTabBarControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFC153C758C007FEE73 /* NGTabBarControllerDelegate.h */; };
 		9B81DD06153C758C007FEE73 /* Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFD153C758C007FEE73 /* Prefix.pch */; };
+		DE6A2BEF1629B20200D60130 /* VNToolbarPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */; };
+		DE6A2BF71629BC6F00D60130 /* VNToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = DE6A2BF51629BC6E00D60130 /* VNToolbar.h */; };
+		DE6A2BF81629BC6F00D60130 /* VNToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6A2BF61629BC6F00D60130 /* VNToolbar.m */; };
+		DE6A2BFC1629C0AD00D60130 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6A2BFB1629C0AD00D60130 /* QuartzCore.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +44,10 @@
 		9B81DCFB153C758C007FEE73 /* NGTabBarControllerAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGTabBarControllerAnimation.h; sourceTree = "<group>"; };
 		9B81DCFC153C758C007FEE73 /* NGTabBarControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGTabBarControllerDelegate.h; sourceTree = "<group>"; };
 		9B81DCFD153C758C007FEE73 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNToolbarPosition.h; sourceTree = "<group>"; };
+		DE6A2BF51629BC6E00D60130 /* VNToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNToolbar.h; sourceTree = "<group>"; };
+		DE6A2BF61629BC6F00D60130 /* VNToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNToolbar.m; sourceTree = "<group>"; };
+		DE6A2BFB1629C0AD00D60130 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6A2BFC1629C0AD00D60130 /* QuartzCore.framework in Frameworks */,
 				9B80B53114EA8F7100B83FA0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,6 +83,7 @@
 		9B80B52F14EA8F7100B83FA0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DE6A2BFB1629C0AD00D60130 /* QuartzCore.framework */,
 				9B80B53014EA8F7100B83FA0 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -96,6 +106,9 @@
 				9B294ED71546C70B004E4A63 /* UIViewController+NGTabBarItem.m */,
 				9B38245C156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h */,
 				9B38245D156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.m */,
+				DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */,
+				DE6A2BF51629BC6E00D60130 /* VNToolbar.h */,
+				DE6A2BF61629BC6F00D60130 /* VNToolbar.m */,
 			);
 			path = NGTabBarController;
 			sourceTree = "<group>";
@@ -115,6 +128,8 @@
 				9B294ED81546C70B004E4A63 /* UIViewController+NGTabBarItem.h in Headers */,
 				9B294EDC1546CB17004E4A63 /* NGTabBarItem.h in Headers */,
 				9B38245E156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h in Headers */,
+				DE6A2BEF1629B20200D60130 /* VNToolbarPosition.h in Headers */,
+				DE6A2BF71629BC6F00D60130 /* VNToolbar.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,6 +189,7 @@
 				9B294ED91546C70B004E4A63 /* UIViewController+NGTabBarItem.m in Sources */,
 				9B294EDD1546CB17004E4A63 /* NGTabBarItem.m in Sources */,
 				9B38245F156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.m in Sources */,
+				DE6A2BF81629BC6F00D60130 /* VNToolbar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

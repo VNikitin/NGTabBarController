@@ -57,6 +57,13 @@
     [button addTarget:self action:@selector(handleButtonPress:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
     
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [button1 setTitle:@"Hide-Unhide" forState:UIControlStateNormal];
+    button1.frame = CGRectMake(120, 20, 100, 100);
+    button1.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+    [button1 addTarget:self action:@selector(handleHideToolbar:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button1];
+    
     NGLogFunction();
 }
 
@@ -126,5 +133,7 @@
         [self.ng_tabBarController presentModalViewController:vc animated:YES];
     }
 }
-
+- (void) handleHideToolbar:(id) sender {
+    [self.ng_tabBarController setToolbarHidden:!self.ng_tabBarController.toolbarHidden animated:YES];
+}
 @end

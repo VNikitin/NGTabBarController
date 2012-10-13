@@ -24,6 +24,12 @@
 		9BEA2B6314ED1B4A00AEE977 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B6214ED1B4A00AEE977 /* main.m */; };
 		9BEA2B6714ED1B4A00AEE977 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B6614ED1B4A00AEE977 /* AppDelegate.m */; };
 		9BEA2B8214ED1BC300AEE977 /* NGColoredViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */; };
+		DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6A2BF91629C04D00D60130 /* QuartzCore.framework */; };
+		DEC32FA2162AF88400259A1E /* buoyIconSmall.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32F9D162AF88400259A1E /* buoyIconSmall.png */; };
+		DEC32FA3162AF88400259A1E /* route.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32F9E162AF88400259A1E /* route.png */; };
+		DEC32FA4162AF88400259A1E /* testButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32F9F162AF88400259A1E /* testButton.png */; };
+		DEC32FA5162AF88400259A1E /* sailboat.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32FA0162AF88400259A1E /* sailboat.png */; };
+		DEC32FA6162AF88400259A1E /* moon.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32FA1162AF88400259A1E /* moon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +73,12 @@
 		9BEA2B6614ED1B4A00AEE977 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9BEA2B8014ED1BC300AEE977 /* NGColoredViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGColoredViewController.h; sourceTree = "<group>"; };
 		9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGColoredViewController.m; sourceTree = "<group>"; };
+		DE6A2BF91629C04D00D60130 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		DEC32F9D162AF88400259A1E /* buoyIconSmall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buoyIconSmall.png; sourceTree = "<group>"; };
+		DEC32F9E162AF88400259A1E /* route.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = route.png; sourceTree = "<group>"; };
+		DEC32F9F162AF88400259A1E /* testButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testButton.png; sourceTree = "<group>"; };
+		DEC32FA0162AF88400259A1E /* sailboat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sailboat.png; sourceTree = "<group>"; };
+		DEC32FA1162AF88400259A1E /* moon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */,
 				9BA31574153C76CE002E7628 /* libNGTabBarController.a in Frameworks */,
 				9BEA2B5714ED1B4A00AEE977 /* UIKit.framework in Frameworks */,
 				9BEA2B5914ED1B4A00AEE977 /* Foundation.framework in Frameworks */,
@@ -87,6 +100,11 @@
 		9B6CDB3D154B469800E6B3C4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DEC32F9D162AF88400259A1E /* buoyIconSmall.png */,
+				DEC32F9E162AF88400259A1E /* route.png */,
+				DEC32F9F162AF88400259A1E /* testButton.png */,
+				DEC32FA0162AF88400259A1E /* sailboat.png */,
+				DEC32FA1162AF88400259A1E /* moon.png */,
 				9B6CDB3E154B46A400E6B3C4 /* liveradio.png */,
 				9B6CDB3F154B46A400E6B3C4 /* liveradio@2x.png */,
 				9B6CDB40154B46A400E6B3C4 /* myradio.png */,
@@ -129,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				9BA31567153C769C002E7628 /* NGTabBarController.xcodeproj */,
+				DE6A2BF91629C04D00D60130 /* QuartzCore.framework */,
 				9BEA2B5614ED1B4A00AEE977 /* UIKit.framework */,
 				9BEA2B5814ED1B4A00AEE977 /* Foundation.framework */,
 				9BEA2B5A14ED1B4A00AEE977 /* CoreGraphics.framework */,
@@ -238,6 +257,11 @@
 				9B6CDB4B154B46A400E6B3C4 /* news@2x.png in Resources */,
 				9B6CDB4C154B46A400E6B3C4 /* ondemand.png in Resources */,
 				9B6CDB4D154B46A400E6B3C4 /* ondemand@2x.png in Resources */,
+				DEC32FA2162AF88400259A1E /* buoyIconSmall.png in Resources */,
+				DEC32FA3162AF88400259A1E /* route.png in Resources */,
+				DEC32FA4162AF88400259A1E /* testButton.png in Resources */,
+				DEC32FA5162AF88400259A1E /* sailboat.png in Resources */,
+				DEC32FA6162AF88400259A1E /* moon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

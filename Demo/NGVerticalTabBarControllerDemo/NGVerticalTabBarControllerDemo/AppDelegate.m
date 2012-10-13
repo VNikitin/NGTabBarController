@@ -24,10 +24,10 @@
     NGColoredViewController *vc3 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
     NGColoredViewController *vc4 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
     
-    vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Live" image:[UIImage imageNamed:@"liveradio"]];
-    vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Favorites" image:[UIImage imageNamed:@"myradio"]];
-    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"News" image:[UIImage imageNamed:@"news"]];
-    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"On Demand" image:[UIImage imageNamed:@"ondemand"]];
+    vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Route" image:[UIImage imageNamed:@"route.png"]];
+    vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Online Observation" image:[UIImage imageNamed:@"buoyIconSmall.png"]];
+    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Test Big" image:[UIImage imageNamed:@"moon.png"]];
+    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Sail boat" image:[UIImage imageNamed:@"sailboat.png"]];
     
     vc1.ng_tabBarItem.selectedImageTintColor = [UIColor yellowColor];
     vc1.ng_tabBarItem.selectedTitleColor = [UIColor yellowColor];
@@ -37,6 +37,10 @@
     NGTabBarController *tabBarController = [[NGTestTabBarController alloc] initWithDelegate:self];
     
     tabBarController.viewControllers = viewController;
+    
+    UIBarButtonItem *testToolbarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"liveradio"] style:UIBarButtonItemStylePlain target:nil action:NULL];
+    [tabBarController.toolbar setItems:[NSArray arrayWithObject:testToolbarItem]];
+    tabBarController.toolbarPosition = VNToolbarPositionDynamicOpposite;
     
     self.window.rootViewController = tabBarController;
     self.window.backgroundColor = [UIColor whiteColor];
@@ -54,7 +58,7 @@ sizeOfItemForViewController:(UIViewController *)viewController
                    atIndex:(NSUInteger)index 
                   position:(NGTabBarPosition)position {
     if (NGTabBarIsVertical(position)) {
-        return CGSizeMake(150.f, 60.f);
+        return CGSizeMake(100.f, 60.f);
     } else {
         return CGSizeMake(60.f, 49.f);
     }
