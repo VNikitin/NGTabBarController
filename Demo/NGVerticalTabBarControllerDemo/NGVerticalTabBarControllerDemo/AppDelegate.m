@@ -24,10 +24,10 @@
     NGColoredViewController *vc3 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
     NGColoredViewController *vc4 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
     
-    vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Live" image:[UIImage imageNamed:@"liveradio"]];
-    vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Favorites" image:[UIImage imageNamed:@"myradio"]];
-    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"News" image:[UIImage imageNamed:@"news"]];
-    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"On Demand" image:[UIImage imageNamed:@"ondemand"]];
+    vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Route" image:[UIImage imageNamed:@"route.png"]];
+    vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Online Observation" image:[UIImage imageNamed:@"buoyIconSmall.png"]];
+    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Test Big" image:[UIImage imageNamed:@"moon.png"]];
+    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Sail boat" image:[UIImage imageNamed:@"sailboat.png"]];
     
     vc1.ng_tabBarItem.selectedImageTintColor = [UIColor yellowColor];
     vc1.ng_tabBarItem.selectedTitleColor = [UIColor yellowColor];
