@@ -8,6 +8,9 @@ Custom UIToolbar (VNToolbar) supports:
 - custom styles - rounded corner and arrows for edge
 
 # Details
+## Improvements
+- NGTabBarItem - corrections with drawing and layout images and labels
+
 ##  Layout
 Fixed toolbar position (independent to TabBar position)
 ```
@@ -54,62 +57,11 @@ and any others:
 ```
 
 ## Images
-Dynamic Toolbar Position Opposite - Portrate     
-![Dynamic Toolbar Position Opposite - Portrate](https://www.evernote.com/shard/s244/sh/ebde8344-f9b7-41b8-a368-bf27cbc14725/b9504ef58df79112784d188fc62807f9/res/3db51093-4083-466a-b127-fa233bd047f5/skitch.png "VNToolbarPositionDynamicOpposite")     
-Dynamic Toolbar Position Opposite - Landskape     
-![Dynamic Toolbar Position Opposite - Landskape](https://www.evernote.com/shard/s244/sh/af162d4d-1111-47ae-914a-2e4654e51063/272adff30ac57491c6b3ae10d122dd07/res/b6e74144-ed99-4b71-88ed-c34778fe6e97/skitch.png "VNToolbarPositionDynamicOpposite")     
-Dynamic Toolbar Position - Right     
-![Dynamic Toolbar Position - Right](https://www.evernote.com/shard/s244/sh/12499db3-6a82-446e-9a33-a0e548202228/6ad265c8279c919a4c38cdb4d8397086/res/62c04c86-0434-4b1a-9ec9-282028cf14b1/skitch.png "VNToolbarPositionDynamicRight")     
+Demo example     
+![Example](https://github.com/VNikitin/NGTabBarController/blob/master/Demo/images/example.png "Example")     
+Toolbar Example with arrows     
+![Arrow edge toolbar example](https://github.com/VNikitin/NGTabBarController/blob/master/Demo/images/toolbar.png "Arrow edge toolbar example")     
 
 --------------------------
-<img src="http://office.nousguide.com/nouslogosmall.png" alt="NOUSguide Inc." title="NOUSguide Inc." title" style="display:block; margin: 10px auto 30px auto;" class="center">
 
-# NGTabBarController
-
-A custom TabBarController which can be positioned on the bottom, top, left or top. Utilizes iOS 5 Containment API if possible, but works on iOS 4 too.
-The TabBar is fully customizable with a tintColor or background image as well as the possibility to show/hide the item highlight and the possibility
-to change the text colors, have image-only tabBar items etc.
-
-## Usage
-
-``` objective-c
-NGColoredViewController *vc1 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
-NGColoredViewController *vc2 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
-NGColoredViewController *vc3 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
-NGColoredViewController *vc4 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
-NGColoredViewController *vc5 = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
-
-vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Home" image:image1];
-vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Images" image:image2];
-vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Live" image:image3];
-vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Contact" image:image4];
-vc5.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Settings" image:image5];
-
-NSArray *viewController = [NSArray arrayWithObjects:vc1,vc2,vc3,vc4,vc5,nil];
-
-NGTabBarController *tabBarController = [[NGTestTabBarController alloc] initWithDelegate:self];
-
-tabBarController.animation = NGTabBarControllerAnimationMoveAndScale;
-tabBarController.layoutStrategy = $isPhone() ? NGTabBarLayoutStrategyEvenlyDistributed : NGTabBarLayoutStrategyCentered;
-tabBarController.itemPadding = 10.f;
-tabBarController.showsItemHighlight = NO;
-tabBarController.tintColor = [UIColor redColor];
-tabBarController.viewControllers = viewController;
-self.window.rootViewController = tabBarController;
-```
-
-Just have a look at the provided Demo-Application and the header files to see what's possible.
-
-## Credits
-
-NGTabBarController was created by [Matthias Tretter](https://github.com/myell0w/) ([@myell0w](http://twitter.com/myell0w)).
-
-## Images
-
-![Right Side](http://img.skitch.com/20120427-p14wrqtg2drbpn15exncxgyfbr.png "Right Side")
-![Left Side](http://img.skitch.com/20120427-ctj4hqh5quh5k5r37a92m3u1h4.png "Left Side")
-
-## License
-
-NGTabBarController is available under the MIT license. See the LICENSE file for more info.
-For usage without attribution contact [NOUSguide](mailto:info@nousguide.com).
+# NGTabBarController ![Readme](https://github.com/NOUSguide/NGTabBarController/blob/master/README.mdown "Readme")
