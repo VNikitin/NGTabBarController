@@ -30,7 +30,7 @@
 
 #define kVNToolbarButtonSize 48
 #define kVNToolbarButtonGap 4
-#define kVNArrowScale 0.5
+#define kVNArrowScale 0.3
 
 typedef NS_OPTIONS(NSUInteger, VNToolbarEdgeStyle) {
     VNToolbarEdgeStyleRoundedLeft = 1UL << 0, //-M_PI_2

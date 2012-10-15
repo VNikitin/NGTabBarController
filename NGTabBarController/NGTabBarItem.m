@@ -4,7 +4,11 @@
 #define kNGDefaultTintColor                 [UIColor colorWithRed:41.0/255.0 green:147.0/255.0 blue:239.0/255.0 alpha:1.0]
 #define kNGDefaultTitleColor                [UIColor lightGrayColor]
 #define kNGDefaultSelectedTitleColor        [UIColor whiteColor]
-#define kNGImageOffset                       5.f
+//#define kNGImageOffset                       5.f
+#define kNGDefaultLabelFont                 [UIFont boldSystemFontOfSize:12.f]
+//fit the image or label to self.frame with inset
+#define kNGDefaultContentInset              2.f
+
 
 @interface NGTabBarItem () {
     BOOL _selectedByUser;
@@ -24,6 +28,7 @@
 @synthesize image = _image;
 @synthesize selectedImage = _selectedImage;
 @synthesize titleLabel = _titleLabel;
+@synthesize drawOriginalImage = _drawOriginalImage;
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - Lifecycle
@@ -41,14 +46,20 @@
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
         self.backgroundColor = [UIColor clearColor];
+        _drawOriginalImage = FALSE;
         
         _selectedByUser = NO;
         
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = [UIFont boldSystemFontOfSize:10.f];
+        _titleLabel.font = kNGDefaultLabelFont;
         _titleLabel.textAlignment = UITextAlignmentCenter;
         _titleLabel.textColor = kNGDefaultTitleColor;
+        _titleLabel.shadowColor = [UIColor blackColor];
+        _titleLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
+        _titleLabel.numberOfLines = 0;
+        _titleLabel.lineBreakMode = UILineBreakModeWordWrap | UILineBreakModeTailTruncation;
+        _titleLabel.adjustsFontSizeToFitWidth = FALSE;
         [self addSubview:_titleLabel];
     }
     
@@ -61,22 +72,53 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    CGRect bounds = self.bounds;
+    bounds = CGRectInset(bounds, kNGDefaultContentInset, kNGDefaultContentInset);
     
     if (self.image != nil) {
-        CGFloat imageOffset = self.title.length > 0 ? kNGImageOffset : 0.f;
-        CGFloat textTop = floor((self.bounds.size.height - self.image.size.height)/2.f) - imageOffset + self.image.size.height + 2.f;
-        
-        self.titleLabel.frame = CGRectMake(0.f, textTop, self.bounds.size.width, self.titleLabel.font.lineHeight);
+        CGFloat textTop = floor(CGRectGetMaxY([self imageRect]));
+        self.titleLabel.frame = CGRectMake(bounds.origin.x, textTop, bounds.size.width, self.titleLabel.font.lineHeight);
     } else {
-        self.titleLabel.frame = self.bounds;
+        self.titleLabel.frame = bounds;
     }
 }
+- (CGFloat) imageOffset {
+    CGFloat imageOffset = kNGDefaultContentInset;
+    if (self.titleLabel.text.length > 0) {
+        CGRect bounds = self.bounds;
+        //calc 1 line text height to find image offset with given font size
+        CGRect textBounds = CGRectInset(bounds, kNGDefaultContentInset, kNGDefaultContentInset);
+        textBounds.size.width = CGFLOAT_MAX;
+        textBounds.size = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:textBounds.size];
+        //and preserve spacing for label between own edge and image
+        imageOffset = textBounds.size.height + kNGDefaultContentInset;
+    }
+    return imageOffset;
+}
+- (CGRect) imageRect {
+    CGRect bounds = self.bounds;
+    // calc an image rect in the center of the cell (offset to the top)
+    CGSize imageSize = self.image.size;
+    CGFloat imageOffset = [self imageOffset];
+    
+    //scale image if it's too big or too small
+    CGFloat horizontalRatio = (bounds.size.width - 2 * kNGDefaultContentInset) / imageSize.width;
+    CGFloat verticalRatio = (bounds.size.height - imageOffset - kNGDefaultContentInset) / imageSize.height;
+    CGFloat ratio = MIN(horizontalRatio, verticalRatio);
+    
+    CGSize newSize = CGSizeMake(floorf(imageSize.width * ratio), floorf(imageSize.height * ratio));
 
+    CGRect imageRect = CGRectMake(floorf((bounds.size.width-newSize.width)/2.f),
+                                  floorf(kNGDefaultContentInset),
+                                  newSize.width,
+                                  newSize.height);
+
+    return imageRect;
+}
 - (void)drawRect:(CGRect)rect {
     CGRect bounds = self.bounds;
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    // draw image overlay?
     if (self.image != nil) {
         CGContextSaveGState(context);
         
@@ -84,26 +126,36 @@
         CGContextTranslateCTM(context, 0.f, bounds.size.height);
         CGContextScaleCTM(context, 1.f, -1.f);
         
-        // draw an image in the center of the cell (offset to the top)
-        CGSize imageSize = self.image.size;
-        CGFloat imageOffset = self.title.length > 0 ? kNGImageOffset : 0.f;
-        CGRect imageRect = CGRectMake(floorf(((bounds.size.width-imageSize.width)/2.f)),
-                                      floorf(((bounds.size.height-imageSize.height)/2.f)) + imageOffset,
-                                      imageSize.width,
-                                      imageSize.height);
+        CGRect imageRect = [self imageRect];
+        imageRect = CGRectMake(imageRect.origin.x, floorf([self imageOffset] ), imageRect.size.width, imageRect.size.height);
+        
+        // Set the quality level to use when rescaling
+        CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
         
         // draw either a selection gradient/glow or a regular image
-        if (_selectedByUser) {
-            if (self.selectedImage != nil) {
-                CGContextDrawImage(context, imageRect, self.selectedImage.CGImage);
-            }
-            else {
+        if (_selectedByUser && _selectedImage) {
+            CGContextDrawImage(context, imageRect, self.selectedImage.CGImage);
+        } else if (!_selectedByUser && _drawOriginalImage) {
+            CGContextDrawImage(context, imageRect, self.image.CGImage);
+        } else {            
+            if (_selectedByUser) {
                 // default to shadow + gradient
                 // setup shadow
                 CGSize shadowOffset = CGSizeMake(0.0f, 1.0f);
                 CGFloat shadowBlur = 3.0;
                 CGColorRef cgShadowColor = [[UIColor blackColor] CGColor];
                 
+                // set shadow
+                CGContextSetShadowWithColor(context, shadowOffset, shadowBlur, cgShadowColor);
+
+                // set transparency layer and clip to mask
+                CGContextBeginTransparencyLayer(context, NULL);
+                CGContextClipToMask(context, imageRect, [self.image CGImage]);
+                
+                // fill and end the transparency layer
+                CGContextSetFillColorWithColor(context, [self.selectedImageTintColor CGColor]);
+                CGContextFillRect(context, imageRect);
+
                 // setup gradient
                 CGFloat alpha0 = 0.8;
                 CGFloat alpha1 = 0.6;
@@ -116,28 +168,31 @@
                 CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
                 CGGradientRef colorGradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, (size_t)5);
                 CGColorSpaceRelease(colorSpace);
+                CGPoint start = CGPointMake(CGRectGetMidX(imageRect), imageRect.origin.y);
+                CGPoint end = CGPointMake(CGRectGetMidX(imageRect)-imageRect.size.height/4, imageRect.size.height+imageRect.origin.y);
+                CGContextDrawLinearGradient(context, colorGradient, end, start, 0);
+                CGContextEndTransparencyLayer(context);
+                CGGradientRelease(colorGradient);
+            } else {
+                // default to shadow + gradient
+                // setup shadow
+                CGSize shadowOffset = CGSizeMake(0.0f, -1.0f);
+                CGFloat shadowBlur = 3.0;
+                CGColorRef cgShadowColor = [[UIColor blackColor] CGColor];
                 
                 // set shadow
                 CGContextSetShadowWithColor(context, shadowOffset, shadowBlur, cgShadowColor);
-                
                 // set transparency layer and clip to mask
                 CGContextBeginTransparencyLayer(context, NULL);
                 CGContextClipToMask(context, imageRect, [self.image CGImage]);
                 
                 // fill and end the transparency layer
-                CGContextSetFillColorWithColor(context, [self.selectedImageTintColor CGColor]);
+                CGContextSetFillColorWithColor(context, [[UIColor lightGrayColor] CGColor]);
                 CGContextFillRect(context, imageRect);
-                CGPoint start = CGPointMake(CGRectGetMidX(imageRect), imageRect.origin.y);
-                CGPoint end = CGPointMake(CGRectGetMidX(imageRect)-imageRect.size.height/4, imageRect.size.height+imageRect.origin.y);
-                CGContextDrawLinearGradient(context, colorGradient, end, start, 0);
+
                 CGContextEndTransparencyLayer(context);
-                
-                CGGradientRelease(colorGradient);
             }
-        } else {
-            CGContextDrawImage(context, imageRect, self.image.CGImage);
         }
-        
         CGContextRestoreGState(context);
     }
 }

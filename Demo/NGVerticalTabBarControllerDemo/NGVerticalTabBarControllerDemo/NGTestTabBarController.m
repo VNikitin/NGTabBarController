@@ -45,9 +45,9 @@
         self.tabBar.layoutStrategy = NGTabBarLayoutStrategyCentered;
         self.tabBar.drawGloss = YES;
     } else {
-        self.tabBarPosition = NGTabBarPositionRight;
-        self.tabBar.drawItemHighlight = YES;
-        self.tabBar.drawGloss = NO;
+        self.tabBarPosition = NGTabBarPositionLeft;
+        self.tabBar.drawItemHighlight = NO;
+        self.tabBar.drawGloss = YES;
         self.tabBar.layoutStrategy = NGTabBarLayoutStrategyStrungTogether;
     }
 }
