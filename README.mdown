@@ -58,10 +58,10 @@ and any others:
 
 ## Images
 Demo example     
-![Example](https://github.com/VNikitin/NGTabBarController/blob/master/Demo/images/example.png "Example")     
+![Example](https://github.com/VNikitin/NGTabBarController/raw/master/Demo/images/example.png "Example")     
 Toolbar Example with arrows     
-![Arrow edge toolbar example](https://github.com/VNikitin/NGTabBarController/blob/master/Demo/images/toolbar.png "Arrow edge toolbar example")     
+![Arrow edge toolbar example](https://github.com/VNikitin/NGTabBarController/raw/master/Demo/images/toolbar.png "Arrow edge toolbar example")     
 
 --------------------------
 
-# NGTabBarController ![Readme](https://github.com/NOUSguide/NGTabBarController/blob/master/README.mdown "Readme")
+# NGTabBarController [Readme](https://github.com/NOUSguide/NGTabBarController/blob/master/README.mdown)
