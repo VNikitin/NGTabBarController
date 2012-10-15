@@ -9,7 +9,6 @@
 //fit the image or label to self.frame with inset
 #define kNGDefaultContentInset              2.f
 
-
 @interface NGTabBarItem () {
     BOOL _selectedByUser;
 }
