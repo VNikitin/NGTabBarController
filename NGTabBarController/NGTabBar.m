@@ -116,7 +116,9 @@
         }
     }
     
+
     // re-position each item starting from current top/left
+    BOOL _isVertical = NGTabBarIsVertical(self.position);    
     for (NGTabBarItem *item in self.items) {
         CGRect frame = item.frame;
         
@@ -125,7 +127,7 @@
         item.frame = frame;
         
         // move to next item position
-        if (NGTabBarIsVertical(self.position)) {
+        if (_isVertical) {
             currentFrameTop += frame.size.height;
             currentFrameTop += appliedItemPadding;
         } else {
@@ -133,7 +135,7 @@
             currentFrameLeft += appliedItemPadding;
         }
     }
-    
+
     // re-compute content size
     NGTabBarItem *lastItem = [self.items lastObject];
     
@@ -348,8 +350,8 @@
     }
     
     NSArray *colors = [NSArray arrayWithObjects:
+                       [UIColor colorWithWhite:1.f alpha:0.3f],
                        [UIColor colorWithWhite:0.9f alpha:0.1f],
-                       [UIColor colorWithWhite:0.9f alpha:0.05f],
                        [UIColor clearColor],
                        [UIColor clearColor],
                        nil];

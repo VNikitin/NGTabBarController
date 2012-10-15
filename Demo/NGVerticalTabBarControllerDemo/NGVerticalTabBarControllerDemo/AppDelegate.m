@@ -26,8 +26,9 @@
     
     vc1.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Route" image:[UIImage imageNamed:@"route.png"]];
     vc2.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Online Observation" image:[UIImage imageNamed:@"buoyIconSmall.png"]];
-    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Test Big" image:[UIImage imageNamed:@"moon.png"]];
-    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Sail boat" image:[UIImage imageNamed:@"sailboat.png"]];
+    vc2.ng_tabBarItem.drawOriginalImage = TRUE;
+    vc3.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"Test Big" image:[UIImage imageNamed:@"sailboat.png"]];
+    vc4.ng_tabBarItem = [NGTabBarItem itemWithTitle:@"test long long long text and even much more that fits into TabBarItem frame and truncate the tail" image:nil];
     
     vc1.ng_tabBarItem.selectedImageTintColor = [UIColor yellowColor];
     vc1.ng_tabBarItem.selectedTitleColor = [UIColor yellowColor];
