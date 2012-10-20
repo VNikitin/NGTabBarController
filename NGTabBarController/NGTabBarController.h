@@ -60,4 +60,7 @@
 - (void) setToolbarHidden:(BOOL)hidden animated:(BOOL)animated;
 @property (nonatomic, getter=isToolbarHidden) BOOL toolbarHidden;
 @property (nonatomic, assign) VNToolbarPosition toolbarPosition;
+@property (nonatomic, strong) UIView *topBar;
+- (void) setTopbarHidden:(BOOL)hidden animated:(BOOL)animated;
+- (void) setToolbar:(VNToolbar *)toolbar;
 @end

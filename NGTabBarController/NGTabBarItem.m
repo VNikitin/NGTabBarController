@@ -111,9 +111,9 @@
                                   floorf(kNGDefaultContentInset),
                                   newSize.width,
                                   newSize.height);
-
     return imageRect;
 }
+
 - (void)drawRect:(CGRect)rect {
     CGRect bounds = self.bounds;
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -126,7 +126,7 @@
         CGContextScaleCTM(context, 1.f, -1.f);
         
         CGRect imageRect = [self imageRect];
-        imageRect = CGRectMake(imageRect.origin.x, floorf([self imageOffset] ), imageRect.size.width, imageRect.size.height);
+        imageRect = CGRectMake(imageRect.origin.x, floorf([self imageOffset]), imageRect.size.width, imageRect.size.height);
         
         // Set the quality level to use when rescaling
         CGContextSetInterpolationQuality(context, kCGInterpolationHigh);

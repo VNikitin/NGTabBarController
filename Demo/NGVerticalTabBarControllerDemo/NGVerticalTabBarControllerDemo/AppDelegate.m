@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 NOUS Wissensmanagement GmbH. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "AppDelegate.h"
 #import "NGTestTabBarController.h"
 #import "NGColoredViewController.h"
@@ -36,12 +37,23 @@
     NSArray *viewController = [NSArray arrayWithObjects:vc1,vc2,vc3,vc4,nil];
     
     NGTabBarController *tabBarController = [[NGTestTabBarController alloc] initWithDelegate:self];
-    
+    tabBarController.tabBarPosition = NGTabBarPositionRight;
     tabBarController.viewControllers = viewController;
     
     UIBarButtonItem *testToolbarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"liveradio"] style:UIBarButtonItemStylePlain target:nil action:NULL];
     [tabBarController.toolbar setItems:[NSArray arrayWithObject:testToolbarItem]];
     tabBarController.toolbarPosition = VNToolbarPositionDynamicOpposite;
+    //test topview
+    CGRect frame = [[UIScreen mainScreen] bounds];
+    frame.size.height = 72;
+    UIView *topView = [[UIView alloc] initWithFrame:frame];
+    topView.backgroundColor = [UIColor lightGrayColor];
+    [topView.layer setShadowColor: [UIColor blackColor].CGColor];
+    [topView.layer setShadowOffset:CGSizeMake(0.0, 4.0)];
+    [topView.layer setShadowRadius:3.0];
+    [topView.layer setShadowOpacity:0.8];
+    tabBarController.topBar = topView;
+    topView.clipsToBounds = FALSE;
     
     self.window.rootViewController = tabBarController;
     self.window.backgroundColor = [UIColor whiteColor];

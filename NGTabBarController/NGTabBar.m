@@ -114,6 +114,12 @@
                 currentFrameLeft = floorf((self.bounds.size.width-totalDimension)/2.f);
             }
         }
+    } else if (self.layoutStrategy == NGTabBarLayoutStrategyStrungTogether) {
+        if (NGTabBarIsVertical(self.position)) {
+            currentFrameTop = floorf(self.itemPadding);
+        } else {
+            currentFrameLeft = floorf(self.itemPadding);
+        }
     }
     
 
@@ -159,8 +165,8 @@
         CGContextSaveGState(context);
         
         if (self.drawGloss) {
-            CGPoint start;
-            CGPoint end;
+            CGPoint start = CGPointZero;
+            CGPoint end = CGPointZero;
             
             // draw gradient
             

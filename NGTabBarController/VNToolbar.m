@@ -36,7 +36,7 @@
 }
 @property (nonatomic, retain)     NSMutableArray *buttonsArray;
 
-UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
+UIImage* _rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
 - (UIImage *)resizedImage:(UIImage *) anImage withContentMode:(UIViewContentMode)contentMode bounds:(CGSize)bounds interpolationQuality:(CGInterpolationQuality)quality;
 @end
 
@@ -45,6 +45,8 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
 @synthesize isHorizontalMode = _isHorizontalMode;
 @synthesize buttonsArray = _buttonsArray;
 @synthesize isLeftSideMode = _isLeftSideMode;
+@synthesize toolbarPosition = _toolbarPosition;
+@synthesize sizeIsFixed = _sizeIsFixed;
 
 #pragma mark - Accessors
 - (void) setFrame:(CGRect)frame {
@@ -78,11 +80,30 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
         _edgeStyle = anEdgeStyle;
     }
 }
-
 - (void) setTransform:(CGAffineTransform)transform {
     transform = CGAffineTransformConcat(transform, _baseTransform);
     [super setTransform:transform];
 }
+- (void) setToolbarPosition:(VNToolbarPosition)toolbarPosition {
+    if (toolbarPosition != _toolbarPosition) {
+        _toolbarPosition = toolbarPosition;
+        switch (toolbarPosition) {
+            case VNToolbarPositionTop:
+            case VNToolbarPositionBottom:
+                _isHorizontalMode = TRUE;
+                break;
+            case VNToolbarPositionLeft:
+                _isHorizontalMode = FALSE;
+                break;
+            case VNToolbarPositionRight:
+                _isHorizontalMode = FALSE;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 #pragma mark - Overriden
 - (void) setItems:(NSArray *)items {
     [self setItems:items animated:FALSE];
@@ -181,9 +202,12 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
 
 #pragma mark - Configure
 - (void) configure {
-    _baseTransform = CGAffineTransformIdentity;    
-    if (!_isHorizontalMode) {
+    _baseTransform = CGAffineTransformIdentity;
+    //preserve toolbar gradient
+    if (_toolbarPosition == VNToolbarPositionRight) {
         _baseTransform = CGAffineTransformRotate(_baseTransform, - 1 * M_PI_2);
+    } else if (_toolbarPosition == VNToolbarPositionLeft) {
+        _baseTransform = CGAffineTransformRotate(_baseTransform, M_PI_2);
     }
     [self updateLayoutForButtons];
     [self updateLayout];
@@ -195,16 +219,32 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
             self.layer.mask = [self createRoundedClip];
             break;
         case VNToolbarEdgeStyleRoundedRight:
-            self.layer.mask = [self createRightRoundedClip];
+            if (_toolbarPosition == VNToolbarPositionRight) {
+                self.layer.mask = [self createLeftRoundedClip];
+            } else {
+                self.layer.mask = [self createRightRoundedClip];
+            }
             break;
         case VNToolbarEdgeStyleRoundedLeft:
-            self.layer.mask = [self createLeftRoundedClip];
+            if (_toolbarPosition == VNToolbarPositionRight) {
+                self.layer.mask = [self createRightRoundedClip];
+            } else {
+                self.layer.mask = [self createLeftRoundedClip];
+            }
             break;
         case VNToolbarEdgeStyleArrowLeft:
-            self.layer.mask = [self createLeftArrowClip];
+            if (_toolbarPosition == VNToolbarPositionRight) {
+                self.layer.mask = [self createRightArrowClip];
+            } else {
+                self.layer.mask = [self createLeftArrowClip];
+            }
             break;
         case VNToolbarEdgeStyleArrowRight:
-            self.layer.mask = [self createRightArrowClip];
+            if (_toolbarPosition == VNToolbarPositionRight) {
+                self.layer.mask = [self createLeftArrowClip];
+            } else {
+                self.layer.mask = [self createRightArrowClip];
+            }
             break;
         case VNToolbarEdgeStyleArrowAll:
             self.layer.mask = [self createArrowClipAllSide];
@@ -255,31 +295,31 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
             return;
         }
         
-        if ([self.items count] > 0) {
+        if ([self.buttonsArray count] > 0) {
             if (CGAffineTransformIsIdentity(_baseTransform)) {
                 _appliedTransform = _baseTransform;
             } else {
                 _appliedTransform = inverse;
             }
-        }
 
-        CGFloat radians = atan2f(inverse.b, inverse.a);
+            CGFloat radians = atan2f(inverse.b, inverse.a);
 
-        CGFloat size = MIN(super.bounds.size.height, super.bounds.size.width) - 4 * kVNToolbarButtonGap;
-        for (UIBarButtonItem *item in self.items) {
-            if (item.customView) {
-                float hfactor = item.customView.bounds.size.width / size;
-                float vfactor = item.customView.bounds.size.height / size;
-                float factor = fmax(hfactor, vfactor);
-                factor = fmax(factor, 1);
-                item.customView.transform = CGAffineTransformScale(inverse, factor, factor);
-            } else if (item.image) {
-                
-                UIImage *newImage = rotateByRadians(item.image, radians);
-                newImage = [self resizedImage:newImage withContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(size, size) interpolationQuality:kCGInterpolationHigh];
-                item.image = newImage;
+            CGFloat size = MIN(super.bounds.size.height, super.bounds.size.width) - 4 * kVNToolbarButtonGap;
+            for (UIBarButtonItem *item in self.items) {
+                if (item.customView) {
+                    float hfactor = item.customView.bounds.size.width / size;
+                    float vfactor = item.customView.bounds.size.height / size;
+                    float factor = fmax(hfactor, vfactor);
+                    factor = fmax(factor, 1);
+                    item.customView.transform = CGAffineTransformScale(inverse, factor, factor);
+                } else if (item.image) {
+                    
+                    UIImage *newImage = _rotateByRadians(item.image, radians);
+                    newImage = [self resizedImage:newImage withContentMode:UIViewContentModeScaleAspectFit bounds:CGSizeMake(size, size) interpolationQuality:kCGInterpolationHigh];
+                    item.image = newImage;
+                }
+                item.width = size;
             }
-            item.width = size;
         }
     }
 }
@@ -369,26 +409,19 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
         }
     }
     if (_sizeIsFixed) {
-        if ([self.buttonsArray count] == 1) {
+        if ((_toolbarPosition == VNToolbarPositionBottom || _toolbarPosition == VNToolbarPositionTop) && !_isLeftSideMode) {
             UIBarButtonItem *gap = [self flexGap];
             gap.tag = 99999;
             [self addItemToToolbar:gap atIndex:0];
-            gap = [self flexGap];
-            gap.tag = 99998;
-            [self addItemToToolbar:gap atIndex:[self.items count]];
-        } else if (!_isHorizontalMode && !_isLeftSideMode) {
-            UIBarButtonItem *gap = [self flexGap];
-            gap.tag = 99999;
-            [self addItemToToolbar:gap atIndex:0];
-        } else if (!_isHorizontalMode && _isLeftSideMode) {
+        } else if ((_toolbarPosition == VNToolbarPositionBottom || _toolbarPosition == VNToolbarPositionTop) && _isLeftSideMode) {
             UIBarButtonItem *gap = [self flexGap];
             gap.tag = 99998;
             [self addItemToToolbar:gap atIndex:[self.items count]];
-        } else if (_isHorizontalMode && _isLeftSideMode) {
+        } else if ((_toolbarPosition == VNToolbarPositionLeft && _isLeftSideMode) || (_toolbarPosition == VNToolbarPositionRight && !_isLeftSideMode)) {
             UIBarButtonItem *gap = [self flexGap];
             gap.tag = 99998;
             [self addItemToToolbar:gap atIndex:[self.items count]];
-        } else if (_isHorizontalMode && !_isLeftSideMode) {
+        } else if ((_toolbarPosition == VNToolbarPositionLeft && !_isLeftSideMode) || (_toolbarPosition == VNToolbarPositionRight && _isLeftSideMode)) {
             UIBarButtonItem *gap = [self flexGap];
             gap.tag = 99999;
             [self addItemToToolbar:gap atIndex:0];
@@ -663,7 +696,7 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians);
 }
 
 #pragma mark - Helpers
-UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians) {
+UIImage* _rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians) {
     
     CGImageRef imgRef = sourceImage.CGImage;
     
@@ -719,6 +752,9 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians) {
     CGRect transposedRect = CGRectMake(0, 0, newRect.size.height, newRect.size.width);
     CGImageRef imageRef = anImage.CGImage;
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wall"
+
     CGAffineTransform transform = CGAffineTransformIdentity;
     switch (anImage.imageOrientation) {
         case UIImageOrientationDown:           // EXIF = 3
@@ -753,6 +789,7 @@ UIImage* rotateByRadians(UIImage* sourceImage, CGFloat angleInRadians) {
             transform = CGAffineTransformScale(transform, -1, 1);
             break;
     }
+#pragma clang diagnostic pop
 
     BOOL drawTransposed;
     

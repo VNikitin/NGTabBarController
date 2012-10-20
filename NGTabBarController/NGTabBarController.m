@@ -23,7 +23,7 @@ static char tabBarImageViewKey;
 		unsigned int shouldSelectViewController:1;
 		unsigned int didSelectViewController:1;
 	} _delegateFlags;
-    
+    BOOL _topbarHidden;
     BOOL _animationActive;
 }
 
@@ -70,6 +70,7 @@ static char tabBarImageViewKey;
 @synthesize toolbar = _toolbar;
 @synthesize toolbarHidden = _toolbarHidden;
 @synthesize toolbarPosition = _toolbarPosition;
+@synthesize topBar = _topBar;
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - Lifecycle
@@ -87,7 +88,8 @@ static char tabBarImageViewKey;
         // need to call setter here
         self.delegate = delegate;
         _toolbarHidden = FALSE;
-        _toolbarPosition = VNToolbarPositionDynamicOpposite;
+        _topbarHidden = FALSE;
+        _toolbarPosition = VNToolbarPositionRight;
     }
     
     return self;
@@ -108,11 +110,14 @@ static char tabBarImageViewKey;
     
     self.tabBar.items = self.tabBarItems;
     self.tabBar.position = self.tabBarPosition;
-    
+    if (_topBar) {
+        [self.view addSubview:_topBar];
+    }
     [self setupTabBarForPosition:self.tabBarPosition];
+    [self setupTopBarPosition];
     [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
-    [self.view addSubview:self.tabBar];
     [self.view addSubview:self.toolbar];
+    [self.view addSubview:self.tabBar];
 }
 
 - (void)viewDidUnload {
@@ -179,7 +184,7 @@ static char tabBarImageViewKey;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
-    if (!self.containmentAPISupported) {
+    if ([self.selectedViewController respondsToSelector:@selector(willAnimateRotationToInterfaceOrientation:duration:)]) {
         [self.selectedViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
         [self layout];
     }
@@ -296,6 +301,8 @@ static char tabBarImageViewKey;
         
         if (self.selectedIndex == NSNotFound && _viewControllers.count > 0) {
             [self.view addSubview:[[_viewControllers objectAtIndex:0] view]];
+            [self.view bringSubviewToFront:self.toolbar];
+            [self.view bringSubviewToFront:self.topBar];
             self.selectedIndex = 0;
         } else {
             [self updateUI];
@@ -369,9 +376,69 @@ static char tabBarImageViewKey;
     return self.animation != NGTabBarControllerAnimationNone ? _animationDuration : 0.f;
 }
 
-////////////////////////////////////////////////////////////////////////
+#pragma mark - Topbar
+- (void) setTopBar:(UIView *)topBar {
+    if (_topBar != topBar) {
+        if (_topBar) {
+            [_topBar removeFromSuperview];
+        } else {
+            [self.view addSubview:topBar];
+        }
+        _topBar = topBar;
+    }
+}
+- (void) setTopbarHidden:(BOOL)hidden animated:(BOOL)animated {
+    if (_topbarHidden != hidden) {
+        _topbarHidden = hidden;
+        if (!_topbarHidden) {
+            self.topBar.hidden = hidden;
+        }
+        
+        if (animated) {
+            //You cann't manage toolbar frame directly. Only center and bounds becouse VNToolbar uses a transfrom property to realize vertical position
+            CGPoint shift = CGPointZero;
+            shift.y = self.topBar.bounds.size.height;
+            if (!_topbarHidden) {
+                self.topBar.center = CGPointMake(self.topBar.center.x + shift.x, self.topBar.center.y + shift.y);
+            }
+            _animationActive = YES;
+            [UIView animateWithDuration:kNGDefaultAnimationDuration
+                             animations:^{
+                                 CGRect frame = self.childViewControllerFrame;
+                                 self.selectedViewController.view.frame = frame;
+                                 if (_topbarHidden) {
+                                     self.topBar.center = CGPointMake(self.topBar.center.x + shift.x, self.topBar.center.y + shift.y);
+                                 } else {
+                                     self.topBar.center = CGPointMake(self.topBar.center.x - shift.x, self.topBar.center.y - shift.y);
+                                 }
+                             } completion:^(BOOL finished) {
+                                 _animationActive = NO;
+                                 if (_topbarHidden) {
+                                     self.topBar.hidden = hidden;
+                                 }
+                                 [self layout];
+                             }];
+        } else {
+            self.selectedViewController.view.frame = self.childViewControllerFrame;
+            self.topBar.hidden = hidden;
+            [self layout];
+        }
+    }
+}
+
+
+
 #pragma mark - UIToolbar
-////////////////////////////////////////////////////////////////////////
+- (void) setToolbar:(VNToolbar *)toolbar {
+    if (_toolbar != toolbar) {
+        CGRect frame = _toolbar.frame;
+        toolbar.frame = frame;
+        [_toolbar removeFromSuperview];
+        _toolbar = toolbar;
+        [self.view addSubview:_toolbar];
+    }
+}
+
 - (void) setToolbarHidden:(BOOL)hidden animated:(BOOL)animated {
     if (_toolbarHidden != hidden) {
         _toolbarHidden = hidden;
@@ -424,8 +491,6 @@ static char tabBarImageViewKey;
             [self layout];
         }
     }
-    
-
 }
 - (BOOL) isToolbarHidden {
     return _toolbarHidden || self.toolbar.hidden;
@@ -436,73 +501,95 @@ static char tabBarImageViewKey;
 - (void) setToolbarPosition:(VNToolbarPosition)toolbarPosition {
     if (_toolbarPosition != toolbarPosition) {
         _toolbarPosition = toolbarPosition;
-        switch (VNToolbarRealPosition(toolbarPosition, self.tabBarPosition)) {
-            case VNToolbarPositionTop:
-            case VNToolbarPositionBottom:
-                self.toolbar.isHorizontalMode = TRUE;
-                self.toolbar.isLeftSideMode = TRUE;
-                break;
-            case VNToolbarPositionLeft:
-            case VNToolbarPositionRight:
-                self.toolbar.isHorizontalMode = FALSE;
-                self.toolbar.isLeftSideMode = FALSE;
-                break;
-            default:
-                break;
-        }
+        self.toolbar.toolbarPosition = VNToolbarRealPosition(toolbarPosition, self.tabBarPosition);
     }
 }
 
 - (VNToolbar *) toolbar {
     if (!_toolbar) {
         _toolbar = [[VNToolbar alloc] initWithFrame:CGRectZero];
-        [self.view bringSubviewToFront:self.tabBar];
+        [self.view bringSubviewToFront:self.topBar];
     }
     return _toolbar;
 }
-
 #pragma mark - Toolbar layout
 - (void)setupToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition) tabbarPosition {
     CGRect frame = CGRectZero;
-    UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
+//    UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
     CGFloat dimension = [self widthOrHeightOfToolbarForPosition:position withTabbarPosition:tabbarPosition];
-    
-    switch (VNToolbarRealPosition(position, tabbarPosition)) {
+    CGFloat topCorrection = 0.f;
+    if (self.topBar) {
+        topCorrection = floorf(self.topBar.bounds.size.height);
+    }
+    CGFloat tabBarCorrection = 0.f;
+    VNToolbarPosition realPosition = VNToolbarRealPosition(position, tabbarPosition);
+    switch (realPosition) {
         case VNToolbarPositionTop: {
-            frame = CGRectMake(0.f, 0.f, self.view.bounds.size.width, dimension);
-            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
-            self.toolbar.isHorizontalMode = TRUE;
-            self.toolbar.isLeftSideMode = TRUE;
+            if (tabbarPosition == NGTabBarPositionLeft) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(tabBarCorrection, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
+            } else if (tabbarPosition == NGTabBarPositionRight) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(0.f, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
+            } else {
+                frame = CGRectMake(tabBarCorrection, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
+            }
+//            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
+            self.toolbar.toolbarPosition = realPosition;
             break;
         }
             
         case VNToolbarPositionRight: {
-            frame = CGRectMake(self.view.bounds.size.width - dimension, 0.f, dimension, self.view.bounds.size.height);
-            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
-            self.toolbar.isHorizontalMode = FALSE;
-            self.toolbar.isLeftSideMode = FALSE;
+            if (tabbarPosition == NGTabBarPositionBottom) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(self.view.bounds.size.width - dimension, topCorrection, dimension, self.view.bounds.size.height - topCorrection - tabBarCorrection);
+            } else if (tabbarPosition == NGTabBarPositionTop) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(self.view.bounds.size.width - dimension, MAX (topCorrection,tabBarCorrection), dimension, self.view.bounds.size.height - MAX (topCorrection, tabBarCorrection));
+            } else {
+                frame = CGRectMake(self.view.bounds.size.width - dimension, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
+            }
+            
+//            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
+            self.toolbar.toolbarPosition = realPosition;
             break;
         }
             
         case VNToolbarPositionBottom: {
-            frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width, dimension);
-            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-            self.toolbar.isHorizontalMode = TRUE;
-            self.toolbar.isLeftSideMode = TRUE;
+            if (tabbarPosition == NGTabBarPositionLeft) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(tabBarCorrection, self.view.bounds.size.height - dimension, self.view.bounds.size.width - tabBarCorrection, dimension);
+            } else if (tabbarPosition == NGTabBarPositionRight) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width - tabBarCorrection, dimension);
+            } else {
+                frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width, dimension);
+            }
+//            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+            self.toolbar.toolbarPosition = realPosition;
             break;
         }
             
         case VNToolbarPositionLeft:
         default: {
-            frame = CGRectMake(0.f, 0.f, dimension, self.view.bounds.size.height);
-            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
-            self.toolbar.isHorizontalMode = FALSE;
-            self.toolbar.isLeftSideMode = FALSE;            
+            if (tabbarPosition == NGTabBarPositionBottom) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(0.f, topCorrection, dimension, self.view.bounds.size.height - tabBarCorrection - topCorrection);
+            } else if (tabbarPosition == NGTabBarPositionTop) {
+                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+                frame = CGRectMake(0.f, MAX (topCorrection,tabBarCorrection), dimension, self.view.bounds.size.height - MAX (topCorrection,tabBarCorrection));
+            } else {
+                frame = CGRectMake(0.f, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
+            }
+            
+//            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
+            self.toolbar.toolbarPosition = realPosition;
             break;
         }
     }
+    frame = CGRectMake(floorf(frame.origin.x), floorf(frame.origin.y), floorf(frame.size.width), floorf(frame.size.height));
     self.toolbar.frame = frame;
-    [self.toolbar sizeToFit]; //configure toolbar
+    [self.toolbar configure]; //configure toolbar
 }
 
 - (CGFloat)widthOrHeightOfToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition)tabbarPosition {
@@ -599,6 +686,25 @@ static char tabBarImageViewKey;
         objc_setAssociatedObject(viewController, &tabBarImageViewKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
 }
+#pragma mark - Layout
+//TODO: response to status bar frame
+- (void)application:(UIApplication *)application willChangeStatusBarFrame:(CGRect)newStatusBarFrame {
+    
+}
+- (void)application:(UIApplication *)application didChangeStatusBarFrame:(CGRect)oldStatusBarFrame {
+    
+}
+
+- (void)layout {
+    CGRect childViewControllerFrame = self.childViewControllerFrame;
+    
+    for (UIViewController *viewController in self.viewControllers) {
+        viewController.view.frame = childViewControllerFrame;
+    }
+    [self setupTabBarForPosition:self.tabBarPosition];
+    [self setupTopBarPosition];
+    [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
+}
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - Private
@@ -648,7 +754,7 @@ static char tabBarImageViewKey;
                 // if the user switches tabs too fast the viewControllers disappear from view hierarchy
                 // this is a workaround to not allow the user to switch during an animated transition
                 self.tabBar.userInteractionEnabled = NO;
-                
+
                 [self transitionFromViewController:oldSelectedViewController
                                   toViewController:newSelectedViewController
                                           duration:self.animationDuration
@@ -675,6 +781,8 @@ static char tabBarImageViewKey;
                                                 }
                                                 
                                                 oldSelectedViewController.view.frame = frame;
+                                                [self.view bringSubviewToFront:self.toolbar];
+                                                [self.view bringSubviewToFront:self.topBar];
                                             }
                                         } completion:^(BOOL finished) {
                                             self.tabBar.userInteractionEnabled = YES;
@@ -684,8 +792,11 @@ static char tabBarImageViewKey;
                                                                  animations:^{
                                                                      oldSelectedViewController.view.transform = CGAffineTransformMakeScale(1.f, 1.f);
                                                                      newSelectedViewController.view.transform = CGAffineTransformMakeScale(1.f, 1.f);
+                                                                     [self.view bringSubviewToFront:self.toolbar];
+                                                                     [self.view bringSubviewToFront:self.topBar];
                                                                  } completion:^(BOOL finished) {
                                                                      newSelectedViewController.view.frame = self.childViewControllerFrame;
+//                                                                     [self.view bringSubviewToFront:self.topBar];
                                                                      _animationActive = NO;
                                                                      
                                                                      // call the delegate that we changed selection
@@ -693,6 +804,7 @@ static char tabBarImageViewKey;
                                                                  }];
                                             } else {
                                                 _animationActive = NO;
+//                                                [self.view bringSubviewToFront:self.topBar];
                                                 // call the delegate that we changed selection
                                                 [self callDelegateDidSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
                                             }
@@ -705,6 +817,8 @@ static char tabBarImageViewKey;
                 [newSelectedViewController viewWillAppear:NO];
                 newSelectedViewController.view.frame = self.childViewControllerFrame;
                 [self.view addSubview:newSelectedViewController.view];
+                [self.view bringSubviewToFront:self.toolbar];
+                [self.view bringSubviewToFront:self.topBar];
                 [newSelectedViewController viewDidAppear:NO];
                 [oldSelectedViewController.view removeFromSuperview];
                 [oldSelectedViewController viewDidDisappear:NO];
@@ -719,21 +833,13 @@ static char tabBarImageViewKey;
             if (!self.containmentAPISupported) {
                 newSelectedViewController.view.frame = self.childViewControllerFrame;
                 [self.view addSubview:newSelectedViewController.view];
+                [self.view bringSubviewToFront:self.toolbar];
+                [self.view bringSubviewToFront:self.topBar];
             }
         }
     } else {
         [self.tabBar deselectSelectedItem];
     }
-}
-
-- (void)layout {
-    CGRect childViewControllerFrame = self.childViewControllerFrame;
-    
-    for (UIViewController *viewController in self.viewControllers) {
-        viewController.view.frame = childViewControllerFrame;
-    }
-    [self setupTabBarForPosition:self.tabBarPosition];
-    [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
 }
 
 - (CGRect)childViewControllerFrame {
@@ -765,7 +871,13 @@ static char tabBarImageViewKey;
     }
     
     edgeInsets = [self modifyInsetsForToolbarPosition:edgeInsets];
-
+    if (self.topBar && !self.topBar.hidden && self.toolbarHidden) {
+        edgeInsets.top += self.topBar.bounds.size.height;
+    } else if (self.topBar && !self.topBar.hidden && !self.toolbarHidden && VNToolbarRealPosition(self.toolbarPosition, self.tabBarPosition) == VNToolbarPositionTop) {
+        edgeInsets.top += - self.toolbar.bounds.size.height + MAX(self.topBar.bounds.size.height, self.toolbar.bounds.size.height);
+    } else if (self.topBar && !self.topBar.hidden) {
+        edgeInsets.top += self.topBar.bounds.size.height;
+    }
     return UIEdgeInsetsInsetRect(bounds, edgeInsets);
 }
 
@@ -811,11 +923,23 @@ static char tabBarImageViewKey;
     return animationOptions;
 }
 
+- (void)setupTopBarPosition {
+    if (self.topBar) {
+        CGRect bounds = self.view.bounds;
+        bounds.size.height = self.topBar.bounds.size.height;
+        self.topBar.frame = bounds;
+    }
+    [self.topBar setNeedsLayout];
+}
+
 - (void)setupTabBarForPosition:(NGTabBarPosition)position {
     CGRect frame = CGRectZero;
     UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
     CGFloat dimension = [self widthOrHeightOfTabBarForPosition:position];
-    
+    CGFloat topCorrection = 0.f;
+    if (self.topBar) {
+        topCorrection = self.topBar.bounds.size.height;
+    }
     switch (position) {
         case NGTabBarPositionTop: {
             frame = CGRectMake(0.f, 0.f, self.view.bounds.size.width, dimension);
@@ -824,7 +948,7 @@ static char tabBarImageViewKey;
         }
             
         case NGTabBarPositionRight: {
-            frame = CGRectMake(self.view.bounds.size.width - dimension, 0.f, dimension, self.view.bounds.size.height);
+            frame = CGRectMake(self.view.bounds.size.width - dimension, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
             autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
             break;
         }
@@ -837,7 +961,7 @@ static char tabBarImageViewKey;
             
         case NGTabBarPositionLeft:
         default: {
-            frame = CGRectMake(0.f, 0.f, dimension, self.view.bounds.size.height);
+            frame = CGRectMake(0.f, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
             autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
             break;
         }

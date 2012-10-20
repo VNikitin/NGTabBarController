@@ -21,6 +21,7 @@
 		9B81DD04153C758C007FEE73 /* NGTabBarControllerAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFB153C758C007FEE73 /* NGTabBarControllerAnimation.h */; };
 		9B81DD05153C758C007FEE73 /* NGTabBarControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFC153C758C007FEE73 /* NGTabBarControllerDelegate.h */; };
 		9B81DD06153C758C007FEE73 /* Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFD153C758C007FEE73 /* Prefix.pch */; };
+		DE667A931631502200787B64 /* VNToolbarProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = DE667A921631502200787B64 /* VNToolbarProtocol.h */; };
 		DE6A2BEF1629B20200D60130 /* VNToolbarPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */; };
 		DE6A2BF71629BC6F00D60130 /* VNToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = DE6A2BF51629BC6E00D60130 /* VNToolbar.h */; };
 		DE6A2BF81629BC6F00D60130 /* VNToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6A2BF61629BC6F00D60130 /* VNToolbar.m */; };
@@ -44,6 +45,7 @@
 		9B81DCFB153C758C007FEE73 /* NGTabBarControllerAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGTabBarControllerAnimation.h; sourceTree = "<group>"; };
 		9B81DCFC153C758C007FEE73 /* NGTabBarControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGTabBarControllerDelegate.h; sourceTree = "<group>"; };
 		9B81DCFD153C758C007FEE73 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		DE667A921631502200787B64 /* VNToolbarProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNToolbarProtocol.h; sourceTree = "<group>"; };
 		DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNToolbarPosition.h; sourceTree = "<group>"; };
 		DE6A2BF51629BC6E00D60130 /* VNToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VNToolbar.h; sourceTree = "<group>"; };
 		DE6A2BF61629BC6F00D60130 /* VNToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VNToolbar.m; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				9B294ED71546C70B004E4A63 /* UIViewController+NGTabBarItem.m */,
 				9B38245C156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h */,
 				9B38245D156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.m */,
+				DE667A921631502200787B64 /* VNToolbarProtocol.h */,
 				DE6A2BEE1629B20200D60130 /* VNToolbarPosition.h */,
 				DE6A2BF51629BC6E00D60130 /* VNToolbar.h */,
 				DE6A2BF61629BC6F00D60130 /* VNToolbar.m */,
@@ -130,6 +133,7 @@
 				9B38245E156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h in Headers */,
 				DE6A2BEF1629B20200D60130 /* VNToolbarPosition.h in Headers */,
 				DE6A2BF71629BC6F00D60130 /* VNToolbar.h in Headers */,
+				DE667A931631502200787B64 /* VNToolbarProtocol.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,7 +163,7 @@
 		9B80B52414EA8F7100B83FA0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "NOUS Wissensmanagement GmbH";
 			};
 			buildConfigurationList = 9B80B52714EA8F7100B83FA0 /* Build configuration list for PBXProject "NGTabBarController" */;
@@ -248,6 +252,7 @@
 				DSTROOT = /tmp/NGVerticalTabBarController.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NGTabBarController/Prefix.pch;
+				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -265,6 +270,7 @@
 				DSTROOT = /tmp/NGVerticalTabBarController.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NGTabBarController/Prefix.pch;
+				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
