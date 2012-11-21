@@ -33,4 +33,8 @@ shouldSelectViewController:(UIViewController *)viewController
  didSelectViewController:(UIViewController *)viewController
                  atIndex:(NSUInteger)index;
 
+- (void)tabBarController:(NGTabBarController *)tabBarController
+ willSelectViewController:(UIViewController *)viewController
+                 atIndex:(NSUInteger)index;
+
 @end

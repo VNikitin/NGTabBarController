@@ -21,7 +21,8 @@
     if (self) {
         self.animation = NGTabBarControllerAnimationMoveAndScale;
         self.tabBar.tintColor = [UIColor colorWithRed:143.f/255.f green:39.f/255.f blue:47.f/255.f alpha:1.f];
-        self.toolbar.tintColor = [UIColor colorWithRed:143.f/255.f green:39.f/255.f blue:47.f/255.f alpha:1.f];
+        self.toolbar.tintColorSingleToolbar = [UIColor colorWithRed:143.f/255.f green:39.f/255.f blue:47.f/255.f alpha:1.f];
+        self.toolbar.tintColorMainToolbar = [UIColor colorWithRed:143.f/255.f green:39.f/255.f blue:47.f/255.f alpha:1.f];
         self.tabBar.itemPadding = 10.f;
         [self setupForInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation];
     }
@@ -45,7 +46,7 @@
         self.tabBar.layoutStrategy = NGTabBarLayoutStrategyCentered;
         self.tabBar.drawGloss = YES;
     } else {
-        self.tabBarPosition = NGTabBarPositionRight;
+        self.tabBarPosition = NGTabBarPositionLeft;
         self.tabBar.drawItemHighlight = NO;
         self.tabBar.drawGloss = YES;
         self.tabBar.layoutStrategy = NGTabBarLayoutStrategyStrungTogether;

@@ -12,11 +12,12 @@
 #import "NGTabBarPosition.h"
 #import "NGTabBarItem.h"
 #import "UIViewController+NGTabBarItem.h"
-#import "VNToolbarPosition.h"
-#import "VNToolbar.h"
+#import "VNToolbarViewController.h"
+
 
 #define kNGTabBarControllerKey      @"kNGTabBarControllerKey"
 
+@class VNToolbarViewController;
 
 /** NGTabBarController is a customized TabBar displayed on any side of the device */
 @interface NGTabBarController : UIViewController <UINavigationControllerDelegate>
@@ -48,7 +49,10 @@
 
 - (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
 
-
+/*
+ *  To override
+ */
+//- (void) tabBarController
 /*
  *  modified by SubMarine on 10/13/12.
  *  Copyright (c) 2012 Valeriy Nikitin. All rights reserved.
@@ -56,11 +60,17 @@
  *  Configuring Custom Toolbars like UINavigationController toolbar
  *  Setup UIToolbar position
  */
-@property (nonatomic, strong, readonly) VNToolbar *toolbar;
+@property (nonatomic, strong, readonly) VNToolbarViewController *toolbar;
 - (void) setToolbarHidden:(BOOL)hidden animated:(BOOL)animated;
 @property (nonatomic, getter=isToolbarHidden) BOOL toolbarHidden;
 @property (nonatomic, assign) VNToolbarPosition toolbarPosition;
 @property (nonatomic, strong) UIView *topBar;
 - (void) setTopbarHidden:(BOOL)hidden animated:(BOOL)animated;
-- (void) setToolbar:(VNToolbar *)toolbar;
+- (void) setToolbar:(VNToolbarViewController *)toolbar;
+/*!
+ @property dynamicShowToolbar
+ @abstract if TRUE - ask selected ViewController that conforms the VNToolbarSetupProtocol - should be toolbar shown
+ @discussion dynamicShowToolbar is used for
+ */
+@property (nonatomic, assign) BOOL dynamicShowToolbar;
 @end

@@ -1,7 +1,7 @@
 #import "NGTabBarController.h"
 #import "UINavigationController+NGTabBarNavigationDelegate.h"
 #import <objc/runtime.h>
-
+#import "VNToolbarViewController.h"
 
 // the default width of the tabBar
 #define kNGTabBarControllerDefaultWidth     150.0f
@@ -22,9 +22,11 @@ static char tabBarImageViewKey;
     struct {
 		unsigned int shouldSelectViewController:1;
 		unsigned int didSelectViewController:1;
+        unsigned int willSelectViewController:1;
 	} _delegateFlags;
     BOOL _topbarHidden;
     BOOL _animationActive;
+    BOOL _dynamicShowToolbar;
 }
 
 // re-defined as read/write
@@ -35,13 +37,14 @@ static char tabBarImageViewKey;
 @property (nonatomic, assign) NSUInteger oldSelectedIndex;
 @property (nonatomic, readonly) BOOL containmentAPISupported;
 @property (nonatomic, readonly) UIViewAnimationOptions currentActiveAnimationOptions;
-@property (nonatomic, strong, readwrite) VNToolbar *toolbar;
+@property (nonatomic, strong, readwrite) VNToolbarViewController *toolbar;
 
 - (void)updateUI;
 - (void)layout;
 
 - (BOOL)delegatedDecisionIfWeShouldSelectViewController:(UIViewController *)viewController atIndex:(NSUInteger)index;
 - (void)callDelegateDidSelectViewController:(UIViewController *)viewController atIndex:(NSUInteger)index;
+- (void)callDelegateWillSelectViewController:(UIViewController *)viewController atIndex:(NSUInteger)index;
 - (CGSize)delegatedSizeOfItemForViewController:(UIViewController *)viewController atIndex:(NSUInteger)index position:(NGTabBarPosition)position;
 
 - (void)setupTabBarForPosition:(NGTabBarPosition)position;
@@ -71,6 +74,7 @@ static char tabBarImageViewKey;
 @synthesize toolbarHidden = _toolbarHidden;
 @synthesize toolbarPosition = _toolbarPosition;
 @synthesize topBar = _topBar;
+@synthesize dynamicShowToolbar = _dynamicShowToolbar;
 
 ////////////////////////////////////////////////////////////////////////
 #pragma mark - Lifecycle
@@ -90,6 +94,7 @@ static char tabBarImageViewKey;
         _toolbarHidden = FALSE;
         _topbarHidden = FALSE;
         _toolbarPosition = VNToolbarPositionRight;
+        _dynamicShowToolbar = FALSE;
     }
     
     return self;
@@ -113,6 +118,7 @@ static char tabBarImageViewKey;
     if (_topBar) {
         [self.view addSubview:_topBar];
     }
+    [self toolbar];
     [self setupTabBarForPosition:self.tabBarPosition];
     [self setupTopBarPosition];
     [self setupToolbarForPosition:self.toolbarPosition withTabbarPosition:self.tabBarPosition];
@@ -188,6 +194,7 @@ static char tabBarImageViewKey;
         [self.selectedViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
         [self layout];
     }
+    
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -206,6 +213,15 @@ static char tabBarImageViewKey;
     }
 }
 
+- (UIView *)rotatingFooterView {
+    if (self.tabBarPosition == NGTabBarPositionBottom) {
+        return self.tabBar;
+    } else if (VNToolbarRealPosition(self.toolbarPosition, self.tabBarPosition) == VNToolbarPositionBottom) {
+        return self.toolbar;
+    }
+    return nil;
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -215,6 +231,7 @@ static char tabBarImageViewKey;
 - (NGTabBar *)tabBar {
     if (_tabBar == nil) {
         _tabBar = [[NGTabBar alloc] initWithFrame:CGRectZero];
+        _tabBar.scrollEnabled = FALSE;
     }
     
     return _tabBar;
@@ -227,6 +244,7 @@ static char tabBarImageViewKey;
         // update delegate flags
         _delegateFlags.shouldSelectViewController = [delegate respondsToSelector:@selector(tabBarController:shouldSelectViewController:atIndex:)];
         _delegateFlags.didSelectViewController = [delegate respondsToSelector:@selector(tabBarController:didSelectViewController:atIndex:)];
+        _delegateFlags.willSelectViewController = [delegate respondsToSelector:@selector(tabBarController:willSelectViewController:atIndex:)];
     }
 }
 
@@ -244,7 +262,6 @@ static char tabBarImageViewKey;
 
 - (void)setSelectedViewController:(UIViewController *)selectedViewController {
     NSAssert([self.viewControllers containsObject:selectedViewController], @"View controller must be a part of the TabBar");
-    
     // updates the UI
     self.selectedIndex = [self.viewControllers indexOfObject:selectedViewController];
 }
@@ -300,6 +317,7 @@ static char tabBarImageViewKey;
         [self layout];
         
         if (self.selectedIndex == NSNotFound && _viewControllers.count > 0) {
+            [self callDelegateWillSelectViewController:[_viewControllers objectAtIndex:0] atIndex:0];
             [self.view addSubview:[[_viewControllers objectAtIndex:0] view]];
             [self.view bringSubviewToFront:self.toolbar];
             [self.view bringSubviewToFront:self.topBar];
@@ -429,7 +447,7 @@ static char tabBarImageViewKey;
 
 
 #pragma mark - UIToolbar
-- (void) setToolbar:(VNToolbar *)toolbar {
+- (void) setToolbar:(VNToolbarViewController *)toolbar {
     if (_toolbar != toolbar) {
         CGRect frame = _toolbar.frame;
         toolbar.frame = frame;
@@ -469,7 +487,7 @@ static char tabBarImageViewKey;
                 self.toolbar.center = CGPointMake(self.toolbar.center.x + shift.x, self.toolbar.center.y + shift.y);
             }
             _animationActive = YES;
-            [UIView animateWithDuration:kNGDefaultAnimationDuration
+            [UIView animateWithDuration:kNGScaleDuration
                              animations:^{
                                  CGRect frame = self.childViewControllerFrame;
                                  self.selectedViewController.view.frame = frame;
@@ -501,99 +519,92 @@ static char tabBarImageViewKey;
 - (void) setToolbarPosition:(VNToolbarPosition)toolbarPosition {
     if (_toolbarPosition != toolbarPosition) {
         _toolbarPosition = toolbarPosition;
-        self.toolbar.toolbarPosition = VNToolbarRealPosition(toolbarPosition, self.tabBarPosition);
+        self.toolbar.position = VNToolbarRealPosition(toolbarPosition, self.tabBarPosition);
     }
 }
 
-- (VNToolbar *) toolbar {
+- (VNToolbarViewController *) toolbar {
     if (!_toolbar) {
-        _toolbar = [[VNToolbar alloc] initWithFrame:CGRectZero];
-        [self.view bringSubviewToFront:self.topBar];
+        _toolbar = [[VNToolbarViewController alloc] initWithFrame:CGRectZero];
+        _toolbar.sizeIsFixed = TRUE;
+        [VNToolbarViewController setSharedToolbarController:_toolbar];
+        if (_toolbar) {
+            [self.view bringSubviewToFront:_topBar];
+        }
     }
     return _toolbar;
 }
 #pragma mark - Toolbar layout
 - (void)setupToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition) tabbarPosition {
     CGRect frame = CGRectZero;
-//    UIViewAutoresizing autoresizingMask = UIViewAutoresizingNone;
     CGFloat dimension = [self widthOrHeightOfToolbarForPosition:position withTabbarPosition:tabbarPosition];
     CGFloat topCorrection = 0.f;
-    if (self.topBar) {
+    if (self.topBar && !self.topBar.hidden) {
         topCorrection = floorf(self.topBar.bounds.size.height);
     }
     CGFloat tabBarCorrection = 0.f;
+    if (!self.tabBarHidden) {
+        tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
+    }
     VNToolbarPosition realPosition = VNToolbarRealPosition(position, tabbarPosition);
     switch (realPosition) {
         case VNToolbarPositionTop: {
             if (tabbarPosition == NGTabBarPositionLeft) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(tabBarCorrection, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
             } else if (tabbarPosition == NGTabBarPositionRight) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(0.f, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
             } else {
                 frame = CGRectMake(tabBarCorrection, 0.f, self.view.bounds.size.width - tabBarCorrection, dimension);
             }
-//            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
-            self.toolbar.toolbarPosition = realPosition;
-            break;
+            self.toolbar.position = realPosition;
         }
-            
+            break;            
         case VNToolbarPositionRight: {
+            NSLog(@"tabBarCorrection = %f", tabBarCorrection);
             if (tabbarPosition == NGTabBarPositionBottom) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(self.view.bounds.size.width - dimension, topCorrection, dimension, self.view.bounds.size.height - topCorrection - tabBarCorrection);
             } else if (tabbarPosition == NGTabBarPositionTop) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(self.view.bounds.size.width - dimension, MAX (topCorrection,tabBarCorrection), dimension, self.view.bounds.size.height - MAX (topCorrection, tabBarCorrection));
             } else {
                 frame = CGRectMake(self.view.bounds.size.width - dimension, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
             }
-            
-//            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin;
-            self.toolbar.toolbarPosition = realPosition;
-            break;
+            self.toolbar.position = realPosition;
         }
-            
+            break;            
         case VNToolbarPositionBottom: {
             if (tabbarPosition == NGTabBarPositionLeft) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(tabBarCorrection, self.view.bounds.size.height - dimension, self.view.bounds.size.width - tabBarCorrection, dimension);
             } else if (tabbarPosition == NGTabBarPositionRight) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width - tabBarCorrection, dimension);
             } else {
                 frame = CGRectMake(0.f, self.view.bounds.size.height - dimension, self.view.bounds.size.width, dimension);
             }
-//            autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-            self.toolbar.toolbarPosition = realPosition;
-            break;
+            self.toolbar.position = realPosition;
         }
-            
+            break;            
         case VNToolbarPositionLeft:
         default: {
             if (tabbarPosition == NGTabBarPositionBottom) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(0.f, topCorrection, dimension, self.view.bounds.size.height - tabBarCorrection - topCorrection);
             } else if (tabbarPosition == NGTabBarPositionTop) {
-                tabBarCorrection = [self widthOrHeightOfTabBarForPosition:tabbarPosition];
                 frame = CGRectMake(0.f, MAX (topCorrection,tabBarCorrection), dimension, self.view.bounds.size.height - MAX (topCorrection,tabBarCorrection));
             } else {
                 frame = CGRectMake(0.f, topCorrection, dimension, self.view.bounds.size.height - topCorrection);
             }
-            
-//            autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin;
-            self.toolbar.toolbarPosition = realPosition;
+            self.toolbar.position = realPosition;
             break;
         }
     }
     frame = CGRectMake(floorf(frame.origin.x), floorf(frame.origin.y), floorf(frame.size.width), floorf(frame.size.height));
     self.toolbar.frame = frame;
-    [self.toolbar configure]; //configure toolbar
+    [self.toolbar sizeToFit]; //configure toolbar
+//    [self.toolbar configure];
+//    [self.toolbar setNeedsLayout];
+
 }
 
 - (CGFloat)widthOrHeightOfToolbarForPosition:(VNToolbarPosition)position withTabbarPosition:(NGTabBarPosition)tabbarPosition {
-    CGFloat dimension = kVNToolbarButtonSize + 2 * kVNToolbarButtonGap;
+    CGFloat dimension = kVNToolbarSize;
 
     // if toolbar size is not fixed than we use the tabbar dimensions, and default dimension otherwise
     if (!self.toolbar.sizeIsFixed) {
@@ -712,14 +723,29 @@ static char tabBarImageViewKey;
 
 - (void)updateUI {
     if (self.selectedIndex != NSNotFound) {
+
         UIViewController *newSelectedViewController = self.selectedViewController;
         [self.tabBar selectItemAtIndex:self.selectedIndex];
+        BOOL hideToolbar = FALSE;
         
+        if (_dynamicShowToolbar) {
+            hideToolbar = TRUE;
+            if ([newSelectedViewController conformsToProtocol:@protocol(VNToolbarSetupProtocol)]) {
+                hideToolbar = ![(UIViewController <VNToolbarSetupProtocol> *)newSelectedViewController shouldShowToolbarController:self.toolbar];
+            } else if ([newSelectedViewController isKindOfClass:[UINavigationController class]]) {
+                UIViewController *vc = [(UINavigationController*)newSelectedViewController visibleViewController] ;
+                if ([vc conformsToProtocol:@protocol(VNToolbarSetupProtocol)]) {
+                    hideToolbar = ![(UIViewController <VNToolbarSetupProtocol> *)vc shouldShowToolbarController:self.toolbar];
+                }
+            }
+        }
+
         // show transition between old and new child viewcontroller
         if (self.oldSelectedIndex != NSNotFound) {
             UIViewController *oldSelectedViewController = [self.viewControllers objectAtIndex:self.oldSelectedIndex];
-            
-            if (self.containmentAPISupported) { 
+            [self callDelegateWillSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
+
+            if (self.containmentAPISupported) {
                 // custom move animation
                 if (self.animation == NGTabBarControllerAnimationMove ||
                     self.animation == NGTabBarControllerAnimationMoveAndScale) {
@@ -786,25 +812,78 @@ static char tabBarImageViewKey;
                                             }
                                         } completion:^(BOOL finished) {
                                             self.tabBar.userInteractionEnabled = YES;
-                                            
                                             if (self.animation == NGTabBarControllerAnimationMoveAndScale) {
+
                                                 [UIView animateWithDuration:kNGScaleDuration
                                                                  animations:^{
                                                                      oldSelectedViewController.view.transform = CGAffineTransformMakeScale(1.f, 1.f);
                                                                      newSelectedViewController.view.transform = CGAffineTransformMakeScale(1.f, 1.f);
                                                                      [self.view bringSubviewToFront:self.toolbar];
                                                                      [self.view bringSubviewToFront:self.topBar];
-                                                                 } completion:^(BOOL finished) {
-                                                                     newSelectedViewController.view.frame = self.childViewControllerFrame;
-//                                                                     [self.view bringSubviewToFront:self.topBar];
-                                                                     _animationActive = NO;
                                                                      
-                                                                     // call the delegate that we changed selection
-                                                                     [self callDelegateDidSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
+                                                                 } completion:^(BOOL finished) {
+                                                                     if (_dynamicShowToolbar && _toolbarHidden != hideToolbar) {
+                                                                         _toolbarHidden = hideToolbar;
+                                                                         if (!_toolbarHidden) {
+                                                                             self.toolbar.hidden = _toolbarHidden;
+                                                                         }
+                                                                         
+                                                                         CGPoint shift = CGPointZero;
+                                                                         switch (VNToolbarRealPosition(self.toolbarPosition, self.tabBarPosition)) {
+                                                                             case VNToolbarPositionTop:
+                                                                                 shift.y -= self.toolbar.frame.size.height;
+                                                                                 break;
+                                                                             case VNToolbarPositionBottom:
+                                                                                 shift.y += self.toolbar.frame.size.height;
+                                                                                 break;
+                                                                             case VNToolbarPositionLeft:
+                                                                                 shift.x -= self.toolbar.frame.size.width;
+                                                                                 break;
+                                                                             case VNToolbarPositionRight:
+                                                                                 shift.x += self.toolbar.frame.size.width;
+                                                                                 break;
+                                                                             default:
+                                                                                 break;
+                                                                         }
+                                                                         if (!_toolbarHidden) {
+                                                                             self.toolbar.center = CGPointMake(self.toolbar.center.x + shift.x, self.toolbar.center.y + shift.y);
+                                                                         }
+                                                                         
+                                                                         [UIView animateWithDuration:kNGScaleDuration
+                                                                                          animations:^{
+                                                                                              CGRect frame = self.childViewControllerFrame;
+                                                                                              self.selectedViewController.view.frame = frame;
+                                                                                              if (_toolbarHidden) {
+                                                                                                  self.toolbar.center = CGPointMake(self.toolbar.center.x + shift.x, self.toolbar.center.y + shift.y);
+                                                                                              } else {
+                                                                                                  self.toolbar.center = CGPointMake(self.toolbar.center.x - shift.x, self.toolbar.center.y - shift.y);
+                                                                                              }
+                                                                                          } completion:^(BOOL finished) {
+                                                                                              _animationActive = NO;
+                                                                                              //                                                                                          if (_toolbarHidden) {
+                                                                                              self.toolbar.hidden = _toolbarHidden;
+                                                                                              //                                                                                          }
+                                                                                              [self layout];
+                                                                                              // call the delegate that we changed selection
+                                                                                              [self callDelegateDidSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
+                                                                                          }];                                                                         
+                                                                     } else {
+                                                                         _animationActive = NO;
+                                                                         if (_dynamicShowToolbar) {
+                                                                             [self setToolbarHidden:hideToolbar animated:FALSE];
+                                                                         }
+                                                                         [self layout];
+                                                                         // call the delegate that we changed selection
+                                                                         [self callDelegateDidSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
+                                                                         
+                                                                     }
                                                                  }];
                                             } else {
                                                 _animationActive = NO;
-//                                                [self.view bringSubviewToFront:self.topBar];
+                                                if (_dynamicShowToolbar) {
+                                                    [self setToolbarHidden:hideToolbar animated:FALSE];
+                                                }
+
                                                 // call the delegate that we changed selection
                                                 [self callDelegateDidSelectViewController:newSelectedViewController atIndex:self.selectedIndex];
                                             }
@@ -815,6 +894,9 @@ static char tabBarImageViewKey;
             else {
                 [oldSelectedViewController viewWillDisappear:NO];
                 [newSelectedViewController viewWillAppear:NO];
+                if (_dynamicShowToolbar) {
+                    [self setToolbarHidden:hideToolbar animated:FALSE];
+                }
                 newSelectedViewController.view.frame = self.childViewControllerFrame;
                 [self.view addSubview:newSelectedViewController.view];
                 [self.view bringSubviewToFront:self.toolbar];
@@ -832,6 +914,9 @@ static char tabBarImageViewKey;
         else {
             if (!self.containmentAPISupported) {
                 newSelectedViewController.view.frame = self.childViewControllerFrame;
+                if (_dynamicShowToolbar) {
+                    [self setToolbarHidden:hideToolbar animated:FALSE];
+                }
                 [self.view addSubview:newSelectedViewController.view];
                 [self.view bringSubviewToFront:self.toolbar];
                 [self.view bringSubviewToFront:self.topBar];
@@ -1025,6 +1110,12 @@ static char tabBarImageViewKey;
 - (void)callDelegateDidSelectViewController:(UIViewController *)viewController atIndex:(NSUInteger)index {
     if (_delegateFlags.didSelectViewController) {
         [self.delegate tabBarController:self didSelectViewController:viewController atIndex:index];
+    }
+}
+
+- (void)callDelegateWillSelectViewController:(UIViewController *)viewController atIndex:(NSUInteger)index {
+    if (_delegateFlags.willSelectViewController) {
+        [self.delegate tabBarController:self willSelectViewController:viewController atIndex:index];
     }
 }
 

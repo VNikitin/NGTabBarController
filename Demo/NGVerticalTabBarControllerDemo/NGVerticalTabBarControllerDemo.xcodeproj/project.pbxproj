@@ -25,6 +25,8 @@
 		9BEA2B6714ED1B4A00AEE977 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B6614ED1B4A00AEE977 /* AppDelegate.m */; };
 		9BEA2B8214ED1BC300AEE977 /* NGColoredViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */; };
 		DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6A2BF91629C04D00D60130 /* QuartzCore.framework */; };
+		DEBB1FC91641C1D400DC7FAA /* libToolbarController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBB1FC41641C1CB00DC7FAA /* libToolbarController.a */; };
+		DEBB1FCC1641C1EC00DC7FAA /* ToolbarControllerResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DEBB1FC61641C1CB00DC7FAA /* ToolbarControllerResource.bundle */; };
 		DEC32FA2162AF88400259A1E /* buoyIconSmall.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32F9D162AF88400259A1E /* buoyIconSmall.png */; };
 		DEC32FA5162AF88400259A1E /* sailboat.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32FA0162AF88400259A1E /* sailboat.png */; };
 		DEC32FCE162BE43200259A1E /* route.png in Resources */ = {isa = PBXBuildFile; fileRef = DEC32FCD162BE43200259A1E /* route.png */; };
@@ -45,7 +47,47 @@
 			remoteGlobalIDString = 9B80B52C14EA8F7100B83FA0;
 			remoteInfo = NGTabBarController;
 		};
+		DEBB1FC11641C1CB00DC7FAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DE667A4F16314F6400787B64;
+			remoteInfo = VNToolbarControllerApp;
+		};
+		DEBB1FC31641C1CB00DC7FAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DE667A7E16314FE300787B64;
+			remoteInfo = ToolbarController;
+		};
+		DEBB1FC51641C1CB00DC7FAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DE598C7A1640EB5500B73070;
+			remoteInfo = ToolbarControllerResource;
+		};
+		DEBB1FC71641C1D100DC7FAA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DE667A7D16314FE300787B64;
+			remoteInfo = ToolbarController;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DE750A1B16418DC40017BAE7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		9B294EDE1546DA96004E4A63 /* NGTestTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGTestTabBarController.h; sourceTree = "<group>"; };
@@ -72,6 +114,7 @@
 		9BEA2B8014ED1BC300AEE977 /* NGColoredViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NGColoredViewController.h; sourceTree = "<group>"; };
 		9BEA2B8114ED1BC300AEE977 /* NGColoredViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NGColoredViewController.m; sourceTree = "<group>"; };
 		DE6A2BF91629C04D00D60130 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VNToolbarControllerApp.xcodeproj; path = ../../../VNToolbarViewController/VNToolbarControllerApp.xcodeproj; sourceTree = "<group>"; };
 		DEC32F9D162AF88400259A1E /* buoyIconSmall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buoyIconSmall.png; sourceTree = "<group>"; };
 		DEC32FA0162AF88400259A1E /* sailboat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sailboat.png; sourceTree = "<group>"; };
 		DEC32FCD162BE43200259A1E /* route.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = route.png; sourceTree = "<group>"; };
@@ -82,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEBB1FC91641C1D400DC7FAA /* libToolbarController.a in Frameworks */,
 				DE6A2BFA1629C04D00D60130 /* QuartzCore.framework in Frameworks */,
 				9BA31574153C76CE002E7628 /* libNGTabBarController.a in Frameworks */,
 				9BEA2B5714ED1B4A00AEE977 /* UIKit.framework in Frameworks */,
@@ -140,6 +184,7 @@
 		9BEA2B5514ED1B4A00AEE977 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */,
 				9BA31567153C769C002E7628 /* NGTabBarController.xcodeproj */,
 				DE6A2BF91629C04D00D60130 /* QuartzCore.framework */,
 				9BEA2B5614ED1B4A00AEE977 /* UIKit.framework */,
@@ -174,6 +219,16 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		DEBB1FB81641C1CA00DC7FAA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DEBB1FC21641C1CB00DC7FAA /* VNToolbarControllerApp.app */,
+				DEBB1FC41641C1CB00DC7FAA /* libToolbarController.a */,
+				DEBB1FC61641C1CB00DC7FAA /* ToolbarControllerResource.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -184,10 +239,12 @@
 				9BEA2B4E14ED1B4A00AEE977 /* Sources */,
 				9BEA2B4F14ED1B4A00AEE977 /* Frameworks */,
 				9BEA2B5014ED1B4A00AEE977 /* Resources */,
+				DE750A1B16418DC40017BAE7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DEBB1FC81641C1D100DC7FAA /* PBXTargetDependency */,
 				9BA31573153C76C8002E7628 /* PBXTargetDependency */,
 			);
 			name = NGVerticalTabBarControllerDemo;
@@ -219,6 +276,10 @@
 					ProductGroup = 9BA31568153C769C002E7628 /* Products */;
 					ProjectRef = 9BA31567153C769C002E7628 /* NGTabBarController.xcodeproj */;
 				},
+				{
+					ProductGroup = DEBB1FB81641C1CA00DC7FAA /* Products */;
+					ProjectRef = DEBB1FB71641C1CA00DC7FAA /* VNToolbarControllerApp.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -235,6 +296,27 @@
 			remoteRef = 9BA3156E153C769C002E7628 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		DEBB1FC21641C1CB00DC7FAA /* VNToolbarControllerApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = VNToolbarControllerApp.app;
+			remoteRef = DEBB1FC11641C1CB00DC7FAA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DEBB1FC41641C1CB00DC7FAA /* libToolbarController.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libToolbarController.a;
+			remoteRef = DEBB1FC31641C1CB00DC7FAA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DEBB1FC61641C1CB00DC7FAA /* ToolbarControllerResource.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ToolbarControllerResource.bundle;
+			remoteRef = DEBB1FC51641C1CB00DC7FAA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -242,6 +324,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEBB1FCC1641C1EC00DC7FAA /* ToolbarControllerResource.bundle in Resources */,
 				9BEA2B6114ED1B4A00AEE977 /* InfoPlist.strings in Resources */,
 				9B6CDB46154B46A400E6B3C4 /* liveradio.png in Resources */,
 				9B6CDB47154B46A400E6B3C4 /* liveradio@2x.png in Resources */,
@@ -278,6 +361,11 @@
 			isa = PBXTargetDependency;
 			name = NGTabBarController;
 			targetProxy = 9BA31572153C76C8002E7628 /* PBXContainerItemProxy */;
+		};
+		DEBB1FC81641C1D100DC7FAA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ToolbarController;
+			targetProxy = DEBB1FC71641C1D100DC7FAA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -317,6 +405,7 @@
 				OTHER_LDFLAGS = "-fobjc-arc";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
 			};
 			name = Debug;
 		};
@@ -338,6 +427,7 @@
 				OTHER_LDFLAGS = "-fobjc-arc";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -345,6 +435,11 @@
 		9BEA2B6B14ED1B4A00AEE977 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					armv7,
+					armv6,
+					armv7s,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NGVerticalTabBarControllerDemo/NGVerticalTabBarControllerDemo-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../../NGTabBarController/**";
@@ -362,6 +457,11 @@
 		9BEA2B6C14ED1B4A00AEE977 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					armv7,
+					armv6,
+					armv7s,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NGVerticalTabBarControllerDemo/NGVerticalTabBarControllerDemo-Prefix.pch";
 				HEADER_SEARCH_PATHS = "../../NGTabBarController/**";

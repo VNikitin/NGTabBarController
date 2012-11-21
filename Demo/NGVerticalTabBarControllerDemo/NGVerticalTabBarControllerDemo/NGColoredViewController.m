@@ -58,11 +58,21 @@
     [self.view addSubview:button];
     
     UIButton *button1 = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [button1 setTitle:@"Hide-Unhide" forState:UIControlStateNormal];
-    button1.frame = CGRectMake(120, 20, 100, 100);
+    [button1 setTitle:@"Toolbar Hidden" forState:UIControlStateNormal];
+    button1.titleLabel.numberOfLines = 2;
+    button1.frame = CGRectMake(20, 20, 100, 100);
     button1.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
     [button1 addTarget:self action:@selector(handleHideToolbar:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button1];
+    
+    UIButton *button2 = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [button2 setTitle:@"Tabbar Hidden" forState:UIControlStateNormal];
+    button2.titleLabel.numberOfLines = 2;
+    button2.frame = CGRectMake(20, self.view.bounds.size.height - 120, 100, 100);
+    button2.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    [button2 addTarget:self action:@selector(handlePush:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button2];
+
     
     NGLogFunction();
 }
@@ -136,4 +146,10 @@
 - (void) handleHideToolbar:(id) sender {
     [self.ng_tabBarController setToolbarHidden:!self.ng_tabBarController.toolbarHidden animated:YES];
 }
+- (void) handlePush:(id) sender {
+    NGColoredViewController *vc = [[NGColoredViewController alloc] initWithNibName:nil bundle:nil];
+    vc.hidesBottomBarWhenPushed = TRUE;
+    [self.ng_tabBarController setTabBarHidden:!self.ng_tabBarController.tabBarHidden animated:YES];
+}
+
 @end
