@@ -7,20 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9B294ED81546C70B004E4A63 /* UIViewController+NGTabBarItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B294ED61546C70B004E4A63 /* UIViewController+NGTabBarItem.h */; };
 		9B294ED91546C70B004E4A63 /* UIViewController+NGTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B294ED71546C70B004E4A63 /* UIViewController+NGTabBarItem.m */; };
-		9B294EDC1546CB17004E4A63 /* NGTabBarItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B294EDA1546CB16004E4A63 /* NGTabBarItem.h */; };
 		9B294EDD1546CB17004E4A63 /* NGTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B294EDB1546CB17004E4A63 /* NGTabBarItem.m */; };
-		9B38245E156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B38245C156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h */; };
 		9B38245F156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B38245D156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.m */; };
-		9B81DCFE153C758C007FEE73 /* NGTabBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCF5153C758C007FEE73 /* NGTabBar.h */; };
 		9B81DCFF153C758C007FEE73 /* NGTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B81DCF6153C758C007FEE73 /* NGTabBar.m */; };
-		9B81DD02153C758C007FEE73 /* NGTabBarController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCF9153C758C007FEE73 /* NGTabBarController.h */; };
 		9B81DD03153C758C007FEE73 /* NGTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B81DCFA153C758C007FEE73 /* NGTabBarController.m */; };
-		9B81DD04153C758C007FEE73 /* NGTabBarControllerAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFB153C758C007FEE73 /* NGTabBarControllerAnimation.h */; };
-		9B81DD05153C758C007FEE73 /* NGTabBarControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFC153C758C007FEE73 /* NGTabBarControllerDelegate.h */; };
-		9B81DD06153C758C007FEE73 /* Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 9B81DCFD153C758C007FEE73 /* Prefix.pch */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		DEBF052D1665C488008324D8 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.llvmgcc42;
+			filePatterns = "*.[mc]";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		9B294ED41546BBDB004E4A63 /* NGTabBarPosition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NGTabBarPosition.h; sourceTree = "<group>"; };
@@ -102,24 +106,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		9B80B52B14EA8F7100B83FA0 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9B81DCFE153C758C007FEE73 /* NGTabBar.h in Headers */,
-				9B81DD02153C758C007FEE73 /* NGTabBarController.h in Headers */,
-				9B81DD04153C758C007FEE73 /* NGTabBarControllerAnimation.h in Headers */,
-				9B81DD05153C758C007FEE73 /* NGTabBarControllerDelegate.h in Headers */,
-				9B81DD06153C758C007FEE73 /* Prefix.pch in Headers */,
-				9B294ED81546C70B004E4A63 /* UIViewController+NGTabBarItem.h in Headers */,
-				9B294EDC1546CB17004E4A63 /* NGTabBarItem.h in Headers */,
-				9B38245E156A82A400C8D1F4 /* UINavigationController+NGTabBarNavigationDelegate.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		9B80B52C14EA8F7100B83FA0 /* NGTabBarController */ = {
 			isa = PBXNativeTarget;
@@ -127,10 +113,10 @@
 			buildPhases = (
 				9B80B52914EA8F7100B83FA0 /* Sources */,
 				9B80B52A14EA8F7100B83FA0 /* Frameworks */,
-				9B80B52B14EA8F7100B83FA0 /* Headers */,
 				DE3D983E16418F3E00676CBF /* Resources */,
 			);
 			buildRules = (
+				DEBF052D1665C488008324D8 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -195,7 +181,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -206,12 +195,13 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
 			};
@@ -221,16 +211,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$VNToolbarController\"/**";
 				VALIDATE_PRODUCT = YES;
@@ -242,17 +236,18 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
 				);
 				DSTROOT = /tmp/NGVerticalTabBarController.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NGTabBarController/Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv7 armv7s armv6";
 			};
 			name = Debug;
 		};
@@ -261,17 +256,18 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
+					"$(ARCHS_STANDARD_32_BIT)",
 				);
 				DSTROOT = /tmp/NGVerticalTabBarController.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NGTabBarController/Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv7 armv7s armv6";
 			};
 			name = Release;
 		};

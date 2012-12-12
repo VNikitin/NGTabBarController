@@ -205,7 +205,8 @@
 
 - (void)setItems:(NSArray *)items {
     if (items != _items) {
-        [_items performSelector:@selector(removeFromSuperview)];
+//        TODO: check in other branch
+        [_items makeObjectsPerformSelector:@selector(removeFromSuperview)];
         
         _items = items;
         
